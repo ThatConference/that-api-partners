@@ -1,0 +1,5 @@
+# import Message from '../dataTypes/message.graphql'
+
+type Query {
+  echo(message: String!): Message!
+}
