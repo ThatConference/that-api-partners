@@ -5,7 +5,9 @@ on:
   push:
     branches: 
       - master
-
+    paths:
+      - '!README*'
+      - '!LICENSE*'
     
 jobs:
   build:
@@ -32,14 +34,25 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
+      - name: Use nodejs 10.x
+        uses: actions/setup-node@master
+        with:
+          node-version: 10.x
+      - name: npm ci
+        run: npm ci
       - name: Checks and verifications
         run: |
             echo $GITHUB_SHA
             echo $GITHUB_REF
             echo $PWD
             ls -lasi
-#    - name: GCP Authentication
-#      uses: actions/gcloud/auth@master
-#      env:
-#        GCLOUD_AUTH: ${{ secrets.GCP_CLOUD_AUTH }}
-
+    - name: GCP Authentication
+      uses: actions/gcloud/auth@master
+      env:
+        GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+    - name: List Functions
+      uses: actions/gcloud/cli@master
+      env:
+        CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+      with:
+        args: functions list
