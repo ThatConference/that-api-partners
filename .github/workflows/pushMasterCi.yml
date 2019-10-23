@@ -24,11 +24,6 @@ jobs:
         touch .env
         npm ci
         npm run validate
-    - name: Archive master artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: tc-api
-        path: .
 
   deploy:
     name: Deploy
@@ -37,10 +32,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@master
-      - name: Download master artifact
-        uses: actions/download-artifact@master
-        with:
-          name: tc-api
       - name: Checks and verifications
         run: |
             echo $GITHUB_SHA
