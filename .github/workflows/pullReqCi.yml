@@ -3,9 +3,6 @@ name: PullReq CI
 
 on:
   pull_request:
-    paths:
-      - '!README*'
-      - '!LICENSE*'
     
 jobs:
   build:

@@ -53,9 +53,9 @@ jobs:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
         with:
           args: functions list
-#    - name: Deploy Function partners
-#      uses: actions/gcloud/cli@master
-#      env:
-#        CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-#      with:
-#        args: functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/src
+      - name: Deploy Function - partners
+        uses: actions/gcloud/cli@master
+        env:
+          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+        with:
+          args: functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/src --entry-point graphEndpoint
