@@ -28,8 +28,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: tc-api
-        path: tc-api
-
+        
   deploy:
     name: Deploy
     needs: build
