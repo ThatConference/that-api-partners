@@ -1,0 +1,51 @@
+# Node Build and Validate and deploy on master push
+name: Push Master CI
+
+on:
+  push:
+    branches: 
+      - master
+
+    
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+    - name: Use Node.js 10.x
+      uses: actions/setup-node@master
+      with:
+        node-version: 10.x
+    - name: npm ci, run validate
+      run: |
+        # TODO: set env for CI
+        touch .env
+        npm ci
+        npm run validate
+    - name: Archive master artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: tc-api
+        path: tc-api
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@master
+      - name: Download master artifact
+        uses: actions/download-artifact@master
+        with:
+          name: tc-api
+      - name: Checks and verifications
+        run: |
+            echo $GITHUB_SHA
+            echo $GITHUB_REF
+            echo $PWD
+            ls -lasi
+      # gcp here
+
