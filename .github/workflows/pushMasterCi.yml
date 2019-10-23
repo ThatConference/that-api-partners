@@ -5,9 +5,6 @@ on:
   push:
     branches: 
       - master
-    paths:
-      - '!README*'
-      - '!LICENSE*'
     
 jobs:
   build:
