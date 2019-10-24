@@ -21,7 +21,12 @@ jobs:
       run: |
         # TODO: set env for CI
         cp .env.sample .env
+        npm ci
         npm run validate
+    - name: Past Build Copies
+      run: |
+        cp ./package.json __build__/
+        cp ./package-lock.json __build__/
     - name: Archive Build Artifact
       uses: actions/upload-artifact@master
       with:
