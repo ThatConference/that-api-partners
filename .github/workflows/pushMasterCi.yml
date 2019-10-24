@@ -50,19 +50,19 @@ jobs:
             echo $PWD
             ls -lasi
 
-#      - name: GCP Authentication
-#        uses: actions/gcloud/auth@master
-#        env:
-#          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
-#      - name: List Functions
-#        uses: actions/gcloud/cli@master
-#        env:
-#          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-#        with:
-#          args: functions list
-#      - name: Deploy Function - partners
-#        uses: actions/gcloud/cli@master
-#        env:
-#          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-#        with:
-#          args: functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/src --entry-point graphEndpoint
+      - name: GCP Authentication
+        uses: actions/gcloud/auth@master
+        env:
+          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+      - name: List Functions
+        uses: actions/gcloud/cli@master
+        env:
+          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+        with:
+          args: functions list
+      - name: Deploy Function - partners
+        uses: actions/gcloud/cli@master
+        env:
+          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+        with:
+          args: functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint
