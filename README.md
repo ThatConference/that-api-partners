@@ -1,5 +1,7 @@
 # template-graph-server
 
+[![Actions Status](https://github.com/ThatConference/that-api-partners/workflows/Push%20Master%20CI/badge.svg)](https://github.com/ThatConference/that-api-partners/workflows/actions)  
+
 ## Dependencies
 
 - Node `10.15.0`
