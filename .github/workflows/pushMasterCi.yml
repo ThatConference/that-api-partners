@@ -20,44 +20,44 @@ jobs:
     - name: npm ci, run validate
       run: |
         # TODO: set env for CI
-        touch .env
-        npm ci
+        cp .env.sample .env
         npm run validate
+    - name: Archive Build Artifact
+      uses: actions/upload-artifact@master
+      with:
+        name: tc-api
+        path: __build__
+
 
   deploy:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repo
-        uses: actions/checkout@master
-      - name: Use nodejs 10.x
-        uses: actions/setup-node@master
+      - name: Download Build Artifact
+        uses: actions/download-artifact@master
         with:
-          node-version: 10.x
-      - name: npm ci
-        run: |
-          npm ci
-          touch .env
+          name: tc-api
       - name: Checks and verifications
         run: |
             echo $GITHUB_SHA
             echo $GITHUB_REF
             echo $PWD
             ls -lasi
-      - name: GCP Authentication
-        uses: actions/gcloud/auth@master
-        env:
-          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
-      - name: List Functions
-        uses: actions/gcloud/cli@master
-        env:
-          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-        with:
-          args: functions list
-      - name: Deploy Function - partners
-        uses: actions/gcloud/cli@master
-        env:
-          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-        with:
-          args: functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/src --entry-point graphEndpoint
+
+#      - name: GCP Authentication
+#        uses: actions/gcloud/auth@master
+#        env:
+#          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+#      - name: List Functions
+#        uses: actions/gcloud/cli@master
+#        env:
+#          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+#        with:
+#          args: functions list
+#      - name: Deploy Function - partners
+#        uses: actions/gcloud/cli@master
+#        env:
+#          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+#        with:
+#          args: functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/src --entry-point graphEndpoint
