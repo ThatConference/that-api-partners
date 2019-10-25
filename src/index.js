@@ -2,13 +2,32 @@
 import 'dotenv/config';
 import connect from 'connect';
 import uuid from 'uuid/v4';
+import * as Sentry from '@sentry/node';
+
 import apolloGraphServer from './graphql';
 
 const api = connect();
 
 const createConfig = () => ({
-  dataSources: {},
+  dataSources: {
+    sentry: Sentry,
+  },
 });
+
+const useSentry = async (req, res, next) => {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.THAT_ENVIRONMENT,
+    debug: true,
+  });
+
+  Sentry.addBreadcrumb({
+    category: 'that-api-partners',
+    message: 'init',
+    level: Sentry.Severity.Info,
+  });
+  next();
+};
 
 /**
  * http middleware function
@@ -28,23 +47,25 @@ const createUserContext = (req, res, next) => {
     correlationId: req.headers['correlation-id']
       ? req.headers['correlation-id']
       : uuid(),
+    sentry: Sentry,
   };
 
   next();
 };
 
 const apiHandler = async (req, res) => {
-  const graphServer = apolloGraphServer(createConfig());
-  const graphApi = graphServer.createHandler({
-    cors: {
-      origin: '*',
-      credentials: true,
-    },
-  });
-
   try {
+    const graphServer = apolloGraphServer(createConfig());
+    const graphApi = graphServer.createHandler({
+      cors: {
+        origin: '*',
+        credentials: true,
+      },
+    });
+
     graphApi(req, res);
   } catch (e) {
+    Sentry.captureException(e);
     res
       .set('Content-Type', 'application/json')
       .status(500)
@@ -57,4 +78,7 @@ const apiHandler = async (req, res) => {
  * Last item in the middleware chain.
  * This is your api handler for your serverless function
  */
-export const graphEndpoint = api.use(createUserContext).use(apiHandler);
+export const graphEndpoint = api
+  .use(useSentry)
+  .use(createUserContext)
+  .use(apiHandler);

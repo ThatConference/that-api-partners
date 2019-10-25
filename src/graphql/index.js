@@ -19,7 +19,7 @@ const typeDefs = gql`
  *
  *     createGateway(userContext)
  */
-const createServer = ({ dataSources, Sentry, ...rest }) =>
+const createServer = ({ dataSources, ...rest }) =>
   new ApolloServer({
     schemaDirectives: {},
     schema: buildFederatedSchema([{ typeDefs, resolvers }]),
@@ -38,8 +38,10 @@ const createServer = ({ dataSources, Sentry, ...rest }) =>
       ...(req && req.context),
     }),
 
-    // todo: an opportunity to do more logging etc before we return to the user.
-    formatError: error => error,
+    formatError: err => {
+      dataSources.sentry.captureException(err);
+      return err;
+    },
   });
 
 export default createServer;
