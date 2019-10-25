@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@apollo/federation": "^0.10.2",
+    "@sentry/node": "^5.7.1",
     "apollo-datasource-rest": "^0.6.5",
     "apollo-server": "^2.9.6",
     "apollo-server-cloud-functions": "^2.9.6",
