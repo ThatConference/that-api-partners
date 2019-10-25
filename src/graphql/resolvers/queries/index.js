@@ -1,5 +1,5 @@
-import echo from './echo';
+import partners from './partners';
 
 export default {
-  ...echo,
+  ...partners,
 };
