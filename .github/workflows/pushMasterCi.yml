@@ -23,7 +23,7 @@ jobs:
         cp .env.sample .env
         npm ci
         npm run validate
-    - name: Past Build Copies
+    - name: Post-Build Copies
       run: |
         cp ./package.json __build__/
         cp ./package-lock.json __build__/
@@ -43,12 +43,14 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: tc-api
+      - name: write .env file
+        run: echo ${{ secrets.ENV_FILE_PROD }} | base64 -d > tc-api/.env
       - name: Checks and verifications
         run: |
             echo $GITHUB_SHA
             echo $GITHUB_REF
             echo $PWD
-            ls -lasi
+            ls -lasiR
 
       - name: GCP Authentication
         uses: actions/gcloud/auth@master
