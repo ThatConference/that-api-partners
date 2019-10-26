@@ -1,0 +1,9 @@
+enum ExperienceLevel {
+  STUDENT
+  JUNIOR
+  MID_LEVEL
+  SENIOR
+  TEAM_LEAD
+  MANAGER
+  DIRECTOR
+}

@@ -1,0 +1,6 @@
+# import Partner from '../dataTypes/partner.graphql'
+
+type Query {
+  partner(id: ID!): Partner
+  partners: [Partner]
+}

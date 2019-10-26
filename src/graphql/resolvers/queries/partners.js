@@ -1,10 +1,11 @@
-import uuid from 'uuid/v4';
+import partnerStore from '../../../dataSources/cloudFirestore/partner';
 
 const resolvers = {
-  partners: async (parent, { message }, { dataSources }) => ({
-    id: uuid(),
-    message: `resolver got: ${message}`,
-  }),
+  partner: async (parent, { id }, { dataSources }) =>
+    partnerStore(dataSources.firestore).get(id),
+
+  partners: async (parent, args, { dataSources }) =>
+    partnerStore(dataSources.firestore).getAll(),
 };
 
 export default resolvers;

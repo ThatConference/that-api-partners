@@ -1,0 +1,33 @@
+# import JobListingInput from './jobListingInput.graphql'
+
+input PartnerInput {
+  year: Int!
+  companyName: String!
+  website: URL!
+  goals: [String]
+
+  heroImage: URL
+  aboutUs: String!
+
+  addressLineOne: String
+  addressLineTwo: String
+  city: String
+  state: String
+  zip: PostalCode
+
+  contactNumber: PhoneNumber
+
+  linkedIn: URL
+  github: URL
+  youtube: URL
+  instagram: URL
+  twitter: URL
+  facebook: URL
+  twitch: URL
+
+  jobListings: [JobListingInput]
+
+  chat: URL
+  blog: URL
+  vlog: URL
+}

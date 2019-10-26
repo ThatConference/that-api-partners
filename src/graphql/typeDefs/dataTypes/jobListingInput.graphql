@@ -1,0 +1,15 @@
+# import JobType from './enums/jobType.graphql'
+# import ExperienceLevel from './enums/experienceLevel.graphql'
+
+input JobListingInput {
+  title: String
+  description: String
+  jobType: JobType
+  internship: Boolean
+  experienceLevel: ExperienceLevel
+  relocationOffered: Boolean
+
+  remote: Boolean
+  role: String
+  featured: Boolean
+}

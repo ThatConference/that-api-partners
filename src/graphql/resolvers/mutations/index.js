@@ -1,5 +1,5 @@
-// import mutateActivity from './activity/mutateActivity';
+import mutatePartner from './partner';
 
-// export default {
-//   ...mutateActivity,
-// };
+export default {
+  ...mutatePartner,
+};

@@ -1,0 +1,34 @@
+# import JobListing from './jobListing.graphql'
+type Partner {
+  id: ID!
+
+  year: Int
+  companyName: String
+  website: URL
+  goals: [String]
+
+  heroImage: URL
+  aboutUs: String
+
+  addressLineOne: String
+  addressLineTwo: String
+  city: String
+  state: String
+  zip: PostalCode
+
+  contactNumber: PhoneNumber
+
+  linkedIn: URL
+  github: URL
+  youtube: URL
+  instagram: URL
+  twitter: URL
+  facebook: URL
+  twitch: URL
+
+  jobListings: [JobListing]
+
+  chat: URL
+  blog: URL
+  vlog: URL
+}
