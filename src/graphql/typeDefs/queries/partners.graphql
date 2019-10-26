@@ -1,5 +1,0 @@
-# import Message from '../dataTypes/message.graphql'
-
-type Query {
-  partners(message: String!): Message!
-}

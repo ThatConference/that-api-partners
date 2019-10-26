@@ -59,3 +59,4 @@ typings/
 .DS_Store
 __testCoverage__/
 __build__/
+__private__/

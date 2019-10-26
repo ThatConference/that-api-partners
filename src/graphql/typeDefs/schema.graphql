@@ -1,1 +1,5 @@
-# import Query.* from './queries/partners.graphql'
+# import * from './scalars.graphql'
+
+# import Query.* from './queries/partner.graphql'
+
+# import Mutation.* from './mutations/partner.graphql'

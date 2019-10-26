@@ -1,7 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 import 'dotenv/config';
 import connect from 'connect';
+import { Firestore } from '@google-cloud/firestore';
 import uuid from 'uuid/v4';
+import responseTime from 'response-time';
 import * as Sentry from '@sentry/node';
 
 import apolloGraphServer from './graphql';
@@ -11,6 +13,7 @@ const api = connect();
 const createConfig = () => ({
   dataSources: {
     sentry: Sentry,
+    firestore: new Firestore(),
   },
 });
 
@@ -48,6 +51,7 @@ const createUserContext = (req, res, next) => {
       ? req.headers['correlation-id']
       : uuid(),
     sentry: Sentry,
+    firestore: new Firestore(),
   };
 
   next();
@@ -79,6 +83,7 @@ const apiHandler = async (req, res) => {
  * This is your api handler for your serverless function
  */
 export const graphEndpoint = api
+  .use(responseTime())
   .use(useSentry)
   .use(createUserContext)
   .use(apiHandler);

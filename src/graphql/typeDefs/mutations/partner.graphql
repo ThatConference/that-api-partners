@@ -1,0 +1,6 @@
+# import Partner from '../dataTypes/partner.graphql'
+# import PartnerInput from '../dataTypes/partnerInput.graphql'
+
+type Mutation {
+  createPartner(partner: PartnerInput!): Partner
+}
