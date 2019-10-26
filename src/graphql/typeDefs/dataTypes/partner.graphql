@@ -1,9 +1,12 @@
 # import JobListing from './jobListing.graphql'
+# import PartnershipLevel from './enums/partnershipLevels.graphql'
 type Partner {
   id: ID!
 
   year: Int
   companyName: String
+  companyLogo: URL
+  partnershipLevel: PartnershipLevel
   website: URL
   goals: [String]
 
