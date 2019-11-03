@@ -44,6 +44,15 @@ const useSentry = async (req, res, next) => {
  *
  */
 const createUserContext = (req, res, next) => {
+  const enableMocking = () => {
+    if (!req.headers['that-enable-mocks']) return false;
+
+    const headerValues = req.headers['that-enable-mocks'].split(',');
+    const mocks = headerValues.map(i => i.trim().toUpperCase());
+
+    return !!mocks.includes('PARTNERS');
+  };
+
   req.userContext = {
     locale: req.headers.locale,
     authToken: req.headers.authorization,
@@ -51,6 +60,7 @@ const createUserContext = (req, res, next) => {
       ? req.headers['correlation-id']
       : uuid(),
     sentry: Sentry,
+    enableMocking: enableMocking(),
     firestore: new Firestore(),
   };
 
@@ -59,7 +69,10 @@ const createUserContext = (req, res, next) => {
 
 const apiHandler = async (req, res) => {
   try {
-    const graphServer = apolloGraphServer(createConfig());
+    const graphServer = apolloGraphServer(
+      createConfig(),
+      req.userContext.enableMocking,
+    );
     const graphApi = graphServer.createHandler({
       cors: {
         origin: '*',
