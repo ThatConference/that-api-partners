@@ -7,7 +7,7 @@
     "node": "10.15.0"
   },
   "scripts": {
-    "build": "rimraf __build__ && babel ./src -d ./__build__ --copy-files --ignore ./**/__tests__,./**/__mocks__",
+    "build": "rimraf __build__ && babel ./src -d ./__build__ --copy-files",
     "postbuild": "cp .env __build__",
     "predeploy:local": "npm run build",
     "deploy:local": "cd ./__build__ && functions-framework --target=graphEndpoint --port=8002 --verbose",
@@ -27,6 +27,7 @@
     "connect": "^3.7.0",
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
+    "faker": "^4.1.0",
     "graphql": "^14.5.8",
     "graphql-import": "^0.7.1",
     "graphql-scalars": "^1.0.4",
