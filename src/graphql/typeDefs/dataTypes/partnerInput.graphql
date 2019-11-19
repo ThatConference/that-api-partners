@@ -1,6 +1,3 @@
-# import JobListingInput from './jobListingInput.graphql'
-# import PartnershipLevel from './enums/partnershipLevels.graphql'
-
 input PartnerInput {
   year: Int
   companyName: String

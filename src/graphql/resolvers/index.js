@@ -1,4 +1,4 @@
-import queries from './queries';
+import queries, { refResolvers } from './queries';
 import mutations from './mutations';
 
 const createServer = {
@@ -8,6 +8,7 @@ const createServer = {
   Mutation: {
     ...mutations,
   },
+  ...refResolvers,
 };
 
 export default createServer;

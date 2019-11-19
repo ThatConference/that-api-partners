@@ -9,3 +9,12 @@ const resolvers = {
 };
 
 export default resolvers;
+
+export const refResolvers = {
+  Partner: {
+    // eslint-disable-next-line no-underscore-dangle
+    __resolveReference(partner, { dataSources }) {
+      return partnerStore(dataSources.firestore).get(partner.id);
+    },
+  },
+};

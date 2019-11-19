@@ -1,6 +1,3 @@
-# import JobListing from './jobListing.graphql'
-# import PartnershipLevel from './enums/partnershipLevels.graphql'
-
 type Partner @key(fields: "id") {
   id: ID!
 
