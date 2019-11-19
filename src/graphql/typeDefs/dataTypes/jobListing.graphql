@@ -1,7 +1,4 @@
-# import JobType from './enums/jobType.graphql'
-# import ExperienceLevel from './enums/experienceLevel.graphql'
-
-type JobListing {
+type JobListing @key(fields: "id") {
   id: ID
   title: String
   description: String
