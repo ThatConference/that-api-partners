@@ -5,6 +5,7 @@ import { Firestore } from '@google-cloud/firestore';
 import uuid from 'uuid/v4';
 import responseTime from 'response-time';
 import * as Sentry from '@sentry/node';
+import cors from 'cors';
 
 import apolloGraphServer from './graphql';
 
@@ -73,12 +74,7 @@ const apiHandler = async (req, res) => {
       createConfig(),
       req.userContext.enableMocking,
     );
-    const graphApi = graphServer.createHandler({
-      cors: {
-        origin: '*',
-        credentials: true,
-      },
-    });
+    const graphApi = graphServer.createHandler();
 
     graphApi(req, res);
   } catch (e) {
@@ -98,6 +94,7 @@ const apiHandler = async (req, res) => {
  */
 export const graphEndpoint = api
   .use(responseTime())
+  .use(cors())
   .use(useSentry)
   .use(createUserContext)
   .use(apiHandler);
