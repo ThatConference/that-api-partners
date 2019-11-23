@@ -1,33 +1,45 @@
 /* eslint-disable import/prefer-default-export */
 import 'dotenv/config';
 import connect from 'connect';
+import cors from 'cors';
 import { Firestore } from '@google-cloud/firestore';
-import uuid from 'uuid/v4';
+import loglevel, { Logger } from 'loglevel';
+import loglevelDebug from 'loglevel-debug';
 import responseTime from 'response-time';
 import * as Sentry from '@sentry/node';
-import cors from 'cors';
+import uuid from 'uuid/v4';
 
 import apolloGraphServer from './graphql';
 
 const api = connect();
+const logger = loglevel.getLogger(`that-api-partners:`);
+
+loglevelDebug(logger);
+if (process.env.NODE_ENV === 'development') {
+  logger.enableAll();
+}
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.THAT_ENVIRONMENT,
+});
 
 const createConfig = () => ({
   dataSources: {
     sentry: Sentry,
+    logger,
     firestore: new Firestore(),
   },
 });
 
-const useSentry = async (req, res, next) => {
-  Sentry.init({
-    dsn: process.env.SENTRY_DSN,
-    environment: process.env.THAT_ENVIRONMENT,
-    debug: true,
-  });
+Sentry.configureScope(scope => {
+  scope.setTag('thatApp', 'that-api-partners');
+});
 
+const useSentry = async (req, res, next) => {
   Sentry.addBreadcrumb({
     category: 'that-api-partners',
-    message: 'init',
+    message: 'partner init',
     level: Sentry.Severity.Info,
   });
   next();
@@ -44,9 +56,11 @@ const useSentry = async (req, res, next) => {
  * @param {string} next - next function to execute
  *
  */
-const createUserContext = (req, res, next) => {
+function createUserContext(req, res, next) {
   const enableMocking = () => {
     if (!req.headers['that-enable-mocks']) return false;
+
+    logger.info('mocking enabled');
 
     const headerValues = req.headers['that-enable-mocks'].split(',');
     const mocks = headerValues.map(i => i.trim().toUpperCase());
@@ -61,31 +75,36 @@ const createUserContext = (req, res, next) => {
       ? req.headers['correlation-id']
       : uuid(),
     sentry: Sentry,
+    logger,
     enableMocking: enableMocking(),
     firestore: new Firestore(),
   };
 
   next();
-};
+}
 
-const apiHandler = async (req, res) => {
-  try {
-    const graphServer = apolloGraphServer(
-      createConfig(),
-      req.userContext.enableMocking,
-    );
-    const graphApi = graphServer.createHandler();
+function apiHandler(req, res) {
+  logger.info('api handler called');
 
-    graphApi(req, res);
-  } catch (e) {
-    if (process.env.NODE_ENV === 'development') console.error(e);
-    Sentry.captureException(e);
-    res
-      .set('Content-Type', 'application/json')
-      .status(500)
-      .send(new Error(e));
-  }
-};
+  const graphServer = apolloGraphServer(
+    createConfig(),
+    req.userContext.enableMocking,
+  );
+
+  const graphApi = graphServer.createHandler();
+  graphApi(req, res);
+}
+
+function failure(err, req, res, next) {
+  logger.trace('Middleware Catch All');
+  logger.error('catchall', err);
+  Sentry.captureException(err);
+
+  res
+    .set('Content-Type', 'application/json')
+    .status(500)
+    .json(err);
+}
 
 /**
  * http middleware function that follows adhering to express's middleware.
@@ -97,4 +116,5 @@ export const graphEndpoint = api
   .use(cors())
   .use(useSentry)
   .use(createUserContext)
-  .use(apiHandler);
+  .use(apiHandler)
+  .use(failure);
