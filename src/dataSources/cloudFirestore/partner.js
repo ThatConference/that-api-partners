@@ -23,6 +23,22 @@ const event = dbInstance => {
     };
   };
 
+  const findBySlug = async slug => {
+    const docRef = partnersCollection.where('slug', '==', slug);
+    const docs = await await docRef.get();
+
+    const results = [];
+
+    docs.forEach(d => {
+      results.push({
+        id: d.id,
+        ...d.data(),
+      });
+    });
+
+    return results;
+  };
+
   const getAll = async () => {
     const { docs } = await partnersCollection.get();
 
@@ -45,7 +61,7 @@ const event = dbInstance => {
     };
   };
 
-  return { create, getAll, get, update };
+  return { create, getAll, get, findBySlug, update };
 };
 
 export default event;

@@ -4,6 +4,9 @@ const resolvers = {
   partner: async (parent, { id }, { dataSources }) =>
     partnerStore(dataSources.firestore).get(id),
 
+  partnerBySlug: async (parent, { slug }, { dataSources }) =>
+    partnerStore(dataSources.firestore).findBySlug(slug),
+
   partners: async (parent, args, { dataSources }) =>
     partnerStore(dataSources.firestore).getAll(),
 };

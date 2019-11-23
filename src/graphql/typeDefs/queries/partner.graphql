@@ -1,4 +1,5 @@
 type Query {
   partner(id: ID!): Partner
+  partnerBySlug(slug: String!): [Partner]
   partners: [Partner]
 }
