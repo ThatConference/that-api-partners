@@ -23,8 +23,9 @@ const typeDefs = gql`
  *
  *     createGateway(userContext)
  */
-const createServer = ({ dataSources, ...rest }, enableMocking = false) => {
+const createServer = ({ dataSources }, enableMocking = false) => {
   let schema = {};
+  const { logger } = dataSources;
 
   if (!enableMocking) {
     schema = buildFederatedSchema([{ typeDefs, resolvers }]);
@@ -47,18 +48,19 @@ const createServer = ({ dataSources, ...rest }, enableMocking = false) => {
       ? { endpoint: '/' }
       : false,
 
-    // todo: here is where we build up our dataSources for our resolvers to use later.
     dataSources: () => ({
       ...dataSources,
     }),
 
-    // todo: here is where we will build our users context that our resolvers can leverage later.
     context: async ({ req }) => ({
       ...(req && req.context),
     }),
 
     formatError: err => {
+      logger.warn('graphql error', err);
+
       dataSources.sentry.captureException(err);
+
       return err;
     },
   });
