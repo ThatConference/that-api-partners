@@ -39,7 +39,10 @@ const event = dbInstance => {
     const docRef = dbInstance.doc(`${collectionName}/${id}`);
     await await docRef.update(scrubbedPartner); // would be nice to handle this better rather than just echo'n our input
 
-    return scrubbedPartner;
+    return {
+      id,
+      ...scrubbedPartner,
+    };
   };
 
   return { create, getAll, get, update };
