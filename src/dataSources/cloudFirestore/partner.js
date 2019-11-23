@@ -61,7 +61,7 @@ const event = dbInstance => {
     };
   };
 
-  return { create, getAll, get, update, findBySlug };
+  return { create, getAll, get, findBySlug, update };
 };
 
 export default event;
