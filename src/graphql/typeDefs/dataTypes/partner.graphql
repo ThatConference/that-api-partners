@@ -8,7 +8,7 @@ type Partner @key(fields: "id") {
   website: URL
   goals: [String]
 
-  slug: URL
+  slug: String
   heroImage: URL
   aboutUs: String
 

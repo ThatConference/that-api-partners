@@ -6,7 +6,7 @@ input PartnerInput {
   website: URL
   goals: [String]
 
-  slug: URL
+  slug: String
   heroImage: URL
   aboutUs: String
 
