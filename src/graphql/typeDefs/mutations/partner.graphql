@@ -1,3 +1,4 @@
 type Mutation {
   createPartner(partner: PartnerInput!): Partner
+  updatePartner(id: ID!, partner: PartnerInput!): Partner
 }
