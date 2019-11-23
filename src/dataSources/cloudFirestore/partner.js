@@ -32,7 +32,17 @@ const event = dbInstance => {
     }));
   };
 
-  return { create, getAll, get };
+  // https://googleapis.dev/nodejs/firestore/latest/DocumentReference.html#update
+  const update = async (id, newPartner) => {
+    const scrubbedPartner = newPartner;
+
+    const docRef = dbInstance.doc(`${collectionName}/${id}`);
+    await await docRef.update(scrubbedPartner); // would be nice to handle this better rather than just echo'n our input
+
+    return scrubbedPartner;
+  };
+
+  return { create, getAll, get, update };
 };
 
 export default event;
