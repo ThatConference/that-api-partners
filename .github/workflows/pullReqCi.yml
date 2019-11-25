@@ -3,23 +3,30 @@ name: PullReq CI
 
 on:
   pull_request:
-    
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@master
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@master
-      with:
-        node-version: 10.x
-    - name: npm ci, run validate
-      run: |
-        # TODO: set env for CI
-        touch .env
-        npm ci
-        npm run validate
-      env:
-        CI: true
+      - uses: actions/checkout@master
+      - name: Use Node.js 10.x
+        uses: actions/setup-node@master
+        with:
+          node-version: 10.x
+      - name: npm ci, run validate
+        run: |
+          cp .env.sample .env
+          npm ci
+          npm run validate
+        env:
+          CI: true
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v2
+        with:
+          status: ${{ job.status }}
+          author: PullReq CI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
+        if: always()

@@ -3,36 +3,43 @@ name: Push Master CI
 
 on:
   push:
-    branches: 
+    branches:
       - master
-    
+
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@master
-    - name: Use Node.js 10.x
-      uses: actions/setup-node@master
-      with:
-        node-version: 10.x
-    - name: npm ci, run validate
-      run: |
-        # TODO: set env for CI
-        cp .env.sample .env
-        npm ci
-        npm run validate
-    - name: Post-Build Copies
-      run: |
-        cp ./package.json __build__/
-        cp ./package-lock.json __build__/
-    - name: Archive Build Artifact
-      uses: actions/upload-artifact@master
-      with:
-        name: tc-api
-        path: __build__
-
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Use Node.js 10.x
+        uses: actions/setup-node@master
+        with:
+          node-version: 10.x
+      - name: npm ci, run validate
+        run: |
+          cp .env.sample .env
+          npm ci
+          npm run validate
+      - name: Post-Build Copies
+        run: |
+          cp ./package.json __build__/
+          cp ./package-lock.json __build__/
+      - name: Archive Build Artifact
+        uses: actions/upload-artifact@master
+        with:
+          name: tc-api
+          path: __build__
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v2
+        with:
+          status: ${{ job.status }}
+          author: Push Master CI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
+        if: job.status == 'failure' || job.status == 'cancelled'
 
   deploy:
     name: Deploy
@@ -47,24 +54,26 @@ jobs:
         run: echo ${{ secrets.ENV_FILE_PROD }} | base64 -d > tc-api/.env
       - name: Checks and verifications
         run: |
-            echo $GITHUB_SHA
-            echo $GITHUB_REF
-            echo $PWD
-            ls -lasiR
-
+          echo $GITHUB_SHA
+          echo $GITHUB_REF
+          echo $PWD
+          ls -lasiR
       - name: GCP Authentication
         uses: actions/gcloud/auth@master
         env:
           GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
-      - name: List Functions
-        uses: actions/gcloud/cli@master
-        env:
-          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-        with:
-          args: functions list
       - name: Deploy Function - partners
         uses: actions/gcloud/cli@master
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
         with:
           args: functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v2
+        with:
+          status: ${{ job.status }}
+          author: Push Master CI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
+        if: always()
