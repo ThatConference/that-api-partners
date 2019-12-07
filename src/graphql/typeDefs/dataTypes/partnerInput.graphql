@@ -1,4 +1,4 @@
-input PartnerInput {
+input PartnerCreateInput {
   year: Int
   companyName: String
   companyLogo: URL
@@ -26,7 +26,38 @@ input PartnerInput {
   facebook: URL
   twitch: URL
 
-  jobListings: [JobListingInput]
+  chat: URL
+  blog: URL
+  vlog: URL
+}
+
+input PartnerUpdateInput {
+  year: Int
+  companyName: String
+  companyLogo: URL
+  partnershipLevel: PartnershipLevel
+  website: URL
+  goals: [String]
+
+  slug: String
+  heroImage: URL
+  aboutUs: String
+
+  addressLineOne: String
+  addressLineTwo: String
+  city: String
+  state: String
+  zip: PostalCode
+
+  contactNumber: PhoneNumber
+
+  linkedIn: URL
+  github: URL
+  youtube: URL
+  instagram: URL
+  twitter: URL
+  facebook: URL
+  twitch: URL
 
   chat: URL
   blog: URL

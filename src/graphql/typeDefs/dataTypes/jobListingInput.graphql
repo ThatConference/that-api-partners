@@ -1,4 +1,17 @@
-input JobListingInput {
+input JobListingCreateInput {
+  title: String
+  description: String
+  jobType: JobType
+  internship: Boolean
+  experienceLevel: ExperienceLevel
+  relocationOffered: Boolean
+
+  remote: Boolean
+  role: String
+  featured: Boolean
+}
+
+input JobListingUpdateInput {
   title: String
   description: String
   jobType: JobType
