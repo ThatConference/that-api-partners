@@ -25,7 +25,7 @@ const event = dbInstance => {
 
   const findBySlug = async slug => {
     const docRef = partnersCollection.where('slug', '==', slug);
-    const docs = await await docRef.get();
+    const docs = await docRef.get();
 
     const results = [];
 
