@@ -1,0 +1,5 @@
+type PartnersMutation {
+  create(partner: PartnerCreateInput!): Partner!
+  delete(id: ID!): ID
+  partner(id: ID!): PartnerMutation
+}

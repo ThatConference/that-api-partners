@@ -1,0 +1,5 @@
+type JobListingsMutation {
+  create(jobListing: JobListingCreateInput!): JobListing!
+  delete(id: ID!): ID
+  jobListing(id: ID!): JobListingMutation
+}

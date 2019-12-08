@@ -4,6 +4,6 @@ export default {
   ...partners,
 };
 
-export const refResolvers = {
+export const fieldResolvers = {
   ...parterRefResolvers,
 };

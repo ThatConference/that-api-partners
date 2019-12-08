@@ -1,5 +1,5 @@
-import queries, { refResolvers } from './queries';
-import mutations from './mutations';
+import queries, { fieldResolvers as qFieldResolvers } from './queries';
+import mutations, { fieldResolvers as mFieldResolvers } from './mutations';
 
 const createServer = {
   Query: {
@@ -8,7 +8,8 @@ const createServer = {
   Mutation: {
     ...mutations,
   },
-  ...refResolvers,
+  ...qFieldResolvers,
+  ...mFieldResolvers,
 };
 
 export default createServer;

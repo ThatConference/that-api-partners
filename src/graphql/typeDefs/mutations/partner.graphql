@@ -1,4 +1,4 @@
-type Mutation {
-  createPartner(partner: PartnerInput!): Partner
-  updatePartner(id: ID!, partner: PartnerInput!): Partner
+type PartnerMutation {
+  update(partner: PartnerUpdateInput!): Partner!
+  jobListing: JobListingMutation
 }
