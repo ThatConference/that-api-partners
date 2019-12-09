@@ -58,16 +58,15 @@ jobs:
           echo $GITHUB_REF
           echo $PWD
           ls -lasiR
-      - name: GCP Authentication
-        uses: actions/gcloud/auth@master
-        env:
-          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
-      - name: Deploy Function - partners
-        uses: actions/gcloud/cli@master
+      - name: Setup GCP Actions
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '270.0.0'
+          service_account_key: ${{ secrets.GCLOUD_AUTH }}
+      - name: Run GCP Deploy Function - partners
+        run: gcloud functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-        with:
-          args: functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint
       - name: Slack Notification
         uses: 8398a7/action-slack@v2
         with:
