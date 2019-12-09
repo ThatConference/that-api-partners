@@ -64,7 +64,7 @@ jobs:
           version: '270.0.0'
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
       - name: Run GCP Deploy Function - partners
-        run: gcloud functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint
+        run: gcloud functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint --memory 512MB
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
       - name: Slack Notification
