@@ -77,3 +77,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
         if: always()
+
+  post:
+    name: GET Schema Refresh Request
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: GET request refresh
+        run: |
+          REFRESH_RESULT=$(curl -s -f https://api.that.tech/.internal/apollo/schema-refresh | jq '.status')
+          echo $REFRESH_RESULT
+          if [ $REFRESH_RESULT != '"reloaded"' ]; then exit 99; fi
