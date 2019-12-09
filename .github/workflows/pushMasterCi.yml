@@ -86,5 +86,5 @@ jobs:
       - name: GET request refresh
         run: |
           REFRESH_RESULT=$(curl -s -f https://api.that.tech/.internal/apollo/schema-refresh | jq '.status')
-          echo $REFRESH_RESULT
+          echo result $REFRESH_RESULT
           if [ $REFRESH_RESULT != '"reloaded"' ]; then exit 99; fi
