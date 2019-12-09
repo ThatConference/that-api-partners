@@ -76,7 +76,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
-        if: always()
+        if: job.status == 'failure' || job.status == 'cancelled'
 
   post:
     name: GET Schema Refresh Request
@@ -88,3 +88,12 @@ jobs:
           REFRESH_RESULT=$(curl -s -f https://api.that.tech/.internal/apollo/schema-refresh?src=partners | jq '.status')
           echo result $REFRESH_RESULT
           if [ $REFRESH_RESULT != '"reloaded"' ]; then exit 99; fi
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v2
+        with:
+          status: ${{ job.status }}
+          author: Push Master CI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
+        if: always()
