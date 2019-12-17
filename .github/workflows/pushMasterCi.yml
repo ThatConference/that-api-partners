@@ -51,9 +51,14 @@ jobs:
         with:
           name: tc-api
       - name: write .env file
-        run: echo ${{ secrets.ENV_FILE_PROD }} | base64 -d > tc-api/.env
+        run: |
+          echo ${{ secrets.ENV_FILE_PROD }} | base64 -d > tc-api/.env
+          SENTRYREL=SENTRY_VERSION=that-api-partners@$(cat tc-api/package.json | jq '.version' | tr -d '"').$(echo $GITHUB_SHA | cut -c1-7)
+          echo $SENTRYREL >> tc-api/.env
+          echo "::set-env name=SENTRYREL::$SENTRYREL"
       - name: Checks and verifications
         run: |
+          echo $SENTRYREL
           echo $GITHUB_SHA
           echo $GITHUB_REF
           echo $PWD
