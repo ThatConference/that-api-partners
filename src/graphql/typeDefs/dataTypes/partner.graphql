@@ -33,4 +33,11 @@ type Partner @key(fields: "id") {
   chat: URL
   blog: URL
   vlog: URL
+
+  "The list of sessions for this partner"
+  sessions: [Session]
+}
+
+extend type Session @key(fields: "id") {
+  id: ID! @external
 }

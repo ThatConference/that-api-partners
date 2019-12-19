@@ -21,11 +21,11 @@
     "@apollo/federation": "^0.11.2",
     "@google-cloud/firestore": "^3.0.0",
     "@sentry/node": "^5.10.2",
-    "apollo-datasource-rest": "^0.6.10",
     "apollo-server": "^2.9.14",
     "apollo-server-cloud-functions": "^2.9.14",
     "connect": "^3.7.0",
     "cors": "^2.8.5",
+    "debug": "^4.1.1",
     "dotenv": "^8.2.0",
     "faker": "^4.1.0",
     "graphql": "^14.5.8",
@@ -37,8 +37,7 @@
     "pino": "^5.15.0",
     "pino-express": "^1.1.1",
     "response-time": "^2.3.2",
-    "uuid": "^3.3.3",
-    "winston": "^3.2.1"
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.7.5",
