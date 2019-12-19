@@ -1,9 +1,13 @@
-import partners, { refResolvers as parterRefResolvers } from './partners';
+import root from './root';
+
+import { fieldResolvers as partnersFields } from './partners';
+import { refResolvers as parterRefResolvers } from './partner';
 
 export default {
-  ...partners,
+  ...root,
 };
 
 export const fieldResolvers = {
   ...parterRefResolvers,
+  ...partnersFields,
 };

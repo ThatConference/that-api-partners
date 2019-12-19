@@ -1,23 +1,24 @@
+/* eslint-disable import/prefer-default-export */
+import debug from 'debug';
 import partnerStore from '../../../dataSources/cloudFirestore/partner';
 
-const resolvers = {
-  partner: async (parent, { id }, { dataSources }) =>
-    partnerStore(dataSources.firestore).get(id),
+const dlog = debug('asdf');
 
-  partnerBySlug: async (parent, { slug }, { dataSources }) =>
-    partnerStore(dataSources.firestore).findBySlug(slug),
+export const fieldResolvers = {
+  PartnersQuery: {
+    all: async (parent, args, { dataSources }) => {
+      dlog('asdf');
+      return partnerStore(dataSources.firestore).getAll();
+    },
 
-  partners: async (parent, args, { dataSources }) =>
-    partnerStore(dataSources.firestore).getAll(),
-};
+    partner: async (parent, { id }, { dataSources }) => {
+      dlog('asdf');
+      return partnerStore(dataSources.firestore).get(id);
+    },
 
-export default resolvers;
-
-export const refResolvers = {
-  Partner: {
-    // eslint-disable-next-line no-underscore-dangle
-    __resolveReference(partner, { dataSources }) {
-      return partnerStore(dataSources.firestore).get(partner.id);
+    partnerBySlug: async (parent, { slug }, { dataSources }) => {
+      dlog('asdf');
+      return partnerStore(dataSources.firestore).findBySlug(slug);
     },
   },
 };
