@@ -2,20 +2,19 @@
 import 'dotenv/config';
 import connect from 'connect';
 import cors from 'cors';
+import debug from 'debug';
 import { Firestore } from '@google-cloud/firestore';
 import pino from 'pino';
-import pinoExpress from 'pino-express';
 import responseTime from 'response-time';
 import * as Sentry from '@sentry/node';
 import uuid from 'uuid/v4';
 
 import apolloGraphServer from './graphql';
-import expressLoggingOptions from './expressLogOptions';
+import { version } from '../package.json';
 
-const { version } = require('../package.json');
-
+const dlog = debug('that-api-partners:index');
 const defaultVersion = `that-api-gateway@${version}`;
-
+const firestore = new Firestore();
 const api = connect();
 
 const logger = pino({
@@ -34,18 +33,19 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.THAT_ENVIRONMENT,
   release: process.env.SENTRY_VERSION || defaultVersion,
+  debug: process.env.NODE_ENV === 'development',
+});
+
+Sentry.configureScope(scope => {
+  scope.setTag('thatApp', 'that-api-partners');
 });
 
 const createConfig = () => ({
   dataSources: {
     sentry: Sentry,
     logger,
-    firestore: new Firestore(),
+    firestore,
   },
-});
-
-Sentry.configureScope(scope => {
-  scope.setTag('thatApp', 'that-api-partners');
 });
 
 const useSentry = async (req, res, next) => {
@@ -72,7 +72,7 @@ function createUserContext(req, res, next) {
   const enableMocking = () => {
     if (!req.headers['that-enable-mocks']) return false;
 
-    req.log.info('mocking enabled');
+    logger.info('mocking enabled');
 
     const headerValues = req.headers['that-enable-mocks'].split(',');
     const mocks = headerValues.map(i => i.trim().toUpperCase());
@@ -84,7 +84,7 @@ function createUserContext(req, res, next) {
     ? req.headers['that-correlation-id']
     : uuid();
 
-  const contextLogger = req.log.child({ correlationId });
+  const contextLogger = logger.child({ correlationId });
 
   req.userContext = {
     locale: req.headers.locale,
@@ -100,8 +100,6 @@ function createUserContext(req, res, next) {
 }
 
 function apiHandler(req, res) {
-  req.log.info('api handler called');
-
   const graphServer = apolloGraphServer(
     createConfig(),
     req.userContext.enableMocking,
@@ -112,8 +110,11 @@ function apiHandler(req, res) {
 }
 
 function failure(err, req, res, next) {
-  req.log.trace('Middleware Catch All');
-  req.log.error('catchall', err);
+  dlog('error %o', err);
+
+  logger.error(err);
+  logger.trace('Middleware Catch All');
+
   Sentry.captureException(err);
 
   res
@@ -130,7 +131,6 @@ function failure(err, req, res, next) {
 export const graphEndpoint = api
   .use(cors())
   .use(responseTime())
-  .use(pinoExpress(logger, expressLoggingOptions))
   .use(useSentry)
   .use(createUserContext)
   .use(apiHandler)

@@ -35,7 +35,6 @@
     "merge-graphql-schemas": "^1.7.3",
     "moment": "^2.24.0",
     "pino": "^5.15.0",
-    "pino-express": "^1.1.1",
     "response-time": "^2.3.2",
     "uuid": "^3.3.3"
   },
