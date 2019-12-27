@@ -12,7 +12,7 @@ import uuid from 'uuid/v4';
 import apolloGraphServer from './graphql';
 import { version } from '../package.json';
 
-const dlog = debug('that-api-partners:index');
+const dlog = debug('that:api:partners:index');
 const defaultVersion = `that-api-gateway@${version}`;
 const firestore = new Firestore();
 const api = connect();
@@ -72,7 +72,7 @@ function createUserContext(req, res, next) {
   const enableMocking = () => {
     if (!req.headers['that-enable-mocks']) return false;
 
-    logger.info('mocking enabled');
+    dlog('mocking enabled');
 
     const headerValues = req.headers['that-enable-mocks'].split(',');
     const mocks = headerValues.map(i => i.trim().toUpperCase());
@@ -100,6 +100,8 @@ function createUserContext(req, res, next) {
 }
 
 function apiHandler(req, res) {
+  dlog('api handler called');
+
   const graphServer = apolloGraphServer(
     createConfig(),
     req.userContext.enableMocking,
