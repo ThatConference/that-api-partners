@@ -12,9 +12,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Use Node.js 10.x
-        uses: actions/setup-node@master
+        uses: actions/setup-node@v1
         with:
           node-version: 10.x
       - name: npm ci, run validate
@@ -26,8 +28,9 @@ jobs:
         run: |
           cp ./package.json __build__/
           cp ./package-lock.json __build__/
+          git rev-list --count master > __build__/ccnt.txt
       - name: Archive Build Artifact
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v1
         with:
           name: tc-api
           path: __build__
@@ -47,27 +50,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Build Artifact
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v1
         with:
           name: tc-api
-      - name: write .env file
+      - name: Setup gcloud Actions
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          version: '274.0.1'
+          service_account_key: ${{ secrets.GCLOUD_AUTH }}
+      - name: Load gcloud beta bits
+        run: gcloud components install beta
+        env:
+          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+      - name: write .env file and create version string
         run: |
-          echo ${{ secrets.ENV_FILE_PROD }} | base64 -d > tc-api/.env
-          SENTRYREL=SENTRY_VERSION=that-api-partners@$(cat tc-api/package.json | jq '.version' | tr -d '"')-$(echo $GITHUB_SHA | cut -c1-7)
+          gcloud beta secrets versions access latest --secret prod-api-non_gateway-env > tc-api/.env
+          C_CNT=$(cat tc-api/ccnt.txt)
+          rm -f tc-api/ccnt.txt
+          SENTRYREL=SENTRY_VERSION=that-api-partners@$(cat tc-api/package.json | jq '.version' | tr -d '"')-$C_CNT.$(echo $GITHUB_SHA | cut -c1-7)
+          echo "" >> tc-api/.env
           echo $SENTRYREL >> tc-api/.env
           echo "::set-env name=SENTRYREL::$SENTRYREL"
+        env:
+          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
       - name: Checks and verifications
         run: |
+          echo "**********"
           echo $SENTRYREL
           echo $GITHUB_SHA
           echo $GITHUB_REF
+          echo "**********"
           echo $PWD
           ls -lasiR
-      - name: Setup GCP Actions
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        with:
-          version: '270.0.0'
-          service_account_key: ${{ secrets.GCLOUD_AUTH }}
       - name: Run GCP Deploy Function - partners
         run: gcloud functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint --memory 512MB
         env:
