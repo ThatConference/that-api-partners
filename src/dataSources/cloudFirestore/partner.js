@@ -1,3 +1,7 @@
+import debug from 'debug';
+
+const dlog = debug('that:api:partners:datasources:firebase:partner');
+
 const event = dbInstance => {
   const collectionName = 'partners';
   const partnersCollection = dbInstance.collection(collectionName);
@@ -15,7 +19,7 @@ const event = dbInstance => {
 
   const get = async id => {
     const docRef = dbInstance.doc(`${collectionName}/${id}`);
-    const doc = await await docRef.get();
+    const doc = await docRef.get();
 
     return {
       id: doc.id,
@@ -50,10 +54,12 @@ const event = dbInstance => {
 
   // https://googleapis.dev/nodejs/firestore/latest/DocumentReference.html#update
   const update = async (id, newPartner) => {
+    dlog('updating id %o', id);
+
     const scrubbedPartner = newPartner;
 
     const docRef = dbInstance.doc(`${collectionName}/${id}`);
-    await await docRef.update(scrubbedPartner); // would be nice to handle this better rather than just echo'n our input
+    await docRef.update(scrubbedPartner); // would be nice to handle this better rather than just echo'n our input
 
     return {
       id,

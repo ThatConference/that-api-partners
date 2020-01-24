@@ -1,9 +1,7 @@
 import rootMutations from './root';
 
-import {
-  fieldResolvers as partnersFields,
-  fieldResolvers as partnerFields,
-} from './partners';
+import { fieldResolvers as partnerFields } from './partner';
+import { fieldResolvers as partnersFields } from './partners';
 
 import { fieldResolvers as jobListingsFields } from './jobListings';
 import { fieldResolvers as jobListingFields } from './jobListing';
