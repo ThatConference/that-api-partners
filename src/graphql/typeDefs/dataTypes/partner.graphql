@@ -4,7 +4,6 @@ type Partner @key(fields: "id") {
   year: Int
   companyName: String
   companyLogo: URL
-  partnershipLevel: PartnershipLevel
   website: URL
   goals: [String]
 
