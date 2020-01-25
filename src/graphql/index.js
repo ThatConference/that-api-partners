@@ -8,11 +8,13 @@ import { buildFederatedSchema } from '@apollo/federation';
 import debug from 'debug';
 import { security } from '@thatconference/api';
 import _ from 'lodash';
+import DataLoader from 'dataloader';
 
 // Graph Types and Resolvers
 import typeDefsRaw from './typeDefs';
 import resolvers from './resolvers';
 import directives from './directives';
+import partnerStore from '../dataSources/cloudFirestore/partner';
 
 const dlog = debug('that:api:partners:graphServer');
 const jwtClient = security.jwt();
@@ -63,9 +65,18 @@ const createServer = ({ dataSources }, enableMocking = false) => {
       ? { endpoint: '/' }
       : false,
 
-    dataSources: () => ({
-      ...dataSources,
-    }),
+    dataSources: () => {
+      dlog('creating dataSources');
+      const { firestore } = dataSources;
+      const partnerLoader = new DataLoader(ids =>
+        partnerStore(firestore).getbatchByIds(ids),
+      );
+
+      return {
+        ...dataSources,
+        partnerLoader,
+      };
+    },
 
     context: async ({ req, res }) => {
       dlog('building graphql user context');
