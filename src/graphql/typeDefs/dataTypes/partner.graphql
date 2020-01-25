@@ -1,7 +1,5 @@
 type Partner @key(fields: "id") {
   id: ID!
-
-  year: Int @deprecated(reason: "belongs on the event service")
   companyName: String
   companyLogo: URL
   website: URL
@@ -36,4 +34,8 @@ type Partner @key(fields: "id") {
   "The list of sessions for this partner"
   sessions: [Session]
   members: [Profile]
+
+  partnershipLevel: PartnershipLevel
+    @deprecated(reason: "belongs on the event service")
+  year: Int @deprecated(reason: "belongs on the event service")
 }
