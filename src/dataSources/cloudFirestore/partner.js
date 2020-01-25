@@ -2,11 +2,11 @@ import debug from 'debug';
 
 const dlog = debug('that:api:partners:datasources:firebase:partner');
 
-const event = dbInstance => {
+const partner = dbInstance => {
   const collectionName = 'partners';
   const partnersCollection = dbInstance.collection(collectionName);
 
-  const create = async newPartner => {
+  async function create(newPartner) {
     const scrubbedPartner = newPartner;
 
     const newDocument = await partnersCollection.add(scrubbedPartner);
@@ -15,9 +15,10 @@ const event = dbInstance => {
       id: newDocument.id,
       ...scrubbedPartner,
     };
-  };
+  }
 
-  const get = async id => {
+  async function get(id) {
+    dlog('getting partner for %o', id);
     const docRef = dbInstance.doc(`${collectionName}/${id}`);
     const doc = await docRef.get();
 
@@ -25,9 +26,9 @@ const event = dbInstance => {
       id: doc.id,
       ...doc.data(),
     };
-  };
+  }
 
-  const findBySlug = async slug => {
+  async function findBySlug(slug) {
     const docRef = partnersCollection.where('slug', '==', slug);
     const docs = await docRef.get();
 
@@ -41,19 +42,32 @@ const event = dbInstance => {
     });
 
     return results;
-  };
+  }
 
-  const getAll = async () => {
+  async function getAll() {
     const { docs } = await partnersCollection.get();
 
     return docs.map(d => ({
       id: d.id,
       ...d.data(),
     }));
-  };
+  }
+
+  function getbatchByIds(ids) {
+    dlog('getting batch of partners for %o', ids);
+
+    const docRefs = ids.map(id => dbInstance.doc(`${collectionName}/${id}`));
+
+    return Promise.all(docRefs.map(d => d.get())).then(res =>
+      res.map(r => ({
+        id: r.id,
+        ...r.data(),
+      })),
+    );
+  }
 
   // https://googleapis.dev/nodejs/firestore/latest/DocumentReference.html#update
-  const update = async (id, newPartner) => {
+  async function update(id, newPartner) {
     dlog('updating id %o', id);
 
     const scrubbedPartner = newPartner;
@@ -65,9 +79,9 @@ const event = dbInstance => {
       id,
       ...scrubbedPartner,
     };
-  };
+  }
 
-  return { create, getAll, get, findBySlug, update };
+  return { create, getAll, get, findBySlug, update, getbatchByIds };
 };
 
-export default event;
+export default partner;

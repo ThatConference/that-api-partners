@@ -1,17 +1,16 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable import/prefer-default-export */
 import debug from 'debug';
 
 import partnerStore from '../../../dataSources/cloudFirestore/partner';
 
-const dlog = debug('that-api-events:query');
+const dlog = debug('that:api:events:query:partner');
 
 export const refResolvers = {
   Partner: {
-    // eslint-disable-next-line no-underscore-dangle
-    __resolveReference(partner, { dataSources }) {
-      dlog('Partner:resolveRef');
-
-      return partnerStore(dataSources.firestore).get(partner.id);
+    __resolveReference({ id }, { dataSources: { firestore, partnerLoader } }) {
+      dlog('Partner:federated resolveRef');
+      return partnerLoader.load(id);
     },
 
     sessions: (parent, args, { dataSources: { firestore, logger } }) => {

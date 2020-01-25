@@ -1,8 +1,6 @@
 input PartnerCreateInput {
-  year: Int
   companyName: String
   companyLogo: URL
-  partnershipLevel: PartnershipLevel
   website: URL
   goals: [String]
 
@@ -32,10 +30,8 @@ input PartnerCreateInput {
 }
 
 input PartnerUpdateInput {
-  year: Int
   companyName: String
   companyLogo: URL
-  partnershipLevel: PartnershipLevel
   website: URL
   goals: [String]
 
