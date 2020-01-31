@@ -1,4 +1,4 @@
 type PartnerMutation {
   update(partner: PartnerUpdateInput!): Partner! @auth(requires: "partners")
-  jobListing: JobListingMutation @auth(requires: "partners:jobListing")
+  jobListings: JobListingsMutation @auth(requires: "partners")
 }

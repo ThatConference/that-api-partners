@@ -14,6 +14,6 @@ export const fieldResolvers = {
       dlog('partner update called');
       return partnerStore(firestore).update(partnerId, partner);
     },
-    jobListing: ({ partnerId }) => ({ partnerId }),
+    jobListings: ({ partnerId }) => ({ partnerId }),
   },
 };

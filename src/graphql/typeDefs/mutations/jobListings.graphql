@@ -1,6 +1,6 @@
 type JobListingsMutation {
   create(jobListing: JobListingCreateInput!): JobListing!
-    @auth(requires: "partners:jobListing")
-  delete(id: ID!): ID @auth(requires: "partners:jobListing")
-  jobListing(id: ID!): JobListingMutation @auth(requires: "partners:jobListing")
+    @auth(requires: "partners")
+  delete(id: ID!): ID @auth(requires: "admin")
+  jobListing(id: ID!): JobListingMutation @auth(requires: "partners")
 }
