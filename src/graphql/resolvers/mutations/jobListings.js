@@ -1,21 +1,20 @@
 /* eslint-disable import/prefer-default-export */
-import partnerStore from '../../../dataSources/cloudFirestore/partner';
+import debug from 'debug';
+
+import jobListingStore from '../../../dataSources/cloudFirestore/jobListing';
+
+const dlog = debug('that:api:partners:JobListingsMutation');
 
 export const fieldResolvers = {
   JobListingsMutation: {
-    create: async (
-      { partnerId },
-      { jobListing },
-      { dataSources: { firestore, logger } },
-    ) => {
-      logger.debug('JobListingsMutation:create called.');
-      // return partnerStore(firestore, logger).create(partner);
-      throw new Error('Not Implemented yet.');
+    create: ({ partnerId }, { jobListing }, { dataSources: { firestore } }) => {
+      dlog('create');
+      return jobListingStore(firestore).add(partnerId, jobListing);
     },
 
-    delete: ({ partnerId }, { id }, { dataSources: { firestore, logger } }) => {
-      logger.debug('JobListingsMutation:delete called.');
-      throw new Error('Not Implemented yet.');
+    delete: ({ partnerId }, { id }, { dataSources: { firestore } }) => {
+      dlog('delete');
+      return jobListingStore(firestore).remove(partnerId, id);
     },
 
     jobListing: ({ partnerId }, { id }) => ({ partnerId, jobListingId: id }),
