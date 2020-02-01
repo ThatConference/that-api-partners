@@ -1,6 +1,5 @@
 type PartnerSessionMutation {
-  add(session: PartnerSessionAddInput!): Session! @auth(requires: "partners")
+  add(session: PartnerSessionAddInput!): Session! @auth(requires: "admin")
   remove: ID @auth(requires: "admin")
-  update(session: PartnerSessionUpdateInput!): Session!
-    @auth(requires: "partners")
+  update(session: PartnerSessionUpdateInput!): Session! @auth(requires: "admin")
 }

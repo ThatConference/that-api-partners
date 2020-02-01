@@ -1,3 +1,3 @@
 type Mutation {
-  partners: PartnersMutation @auth(requires: "partners")
+  partners: PartnersMutation @auth(requires: "admin")
 }
