@@ -33,7 +33,7 @@ type Partner @key(fields: "id") {
 
   "The list of sessions for this partner"
   sessions: [Session]
-  members: [Profile]
+  members: [PublicProfile]
 
   partnershipLevel: PartnershipLevel
     @deprecated(reason: "belongs on the event service")
