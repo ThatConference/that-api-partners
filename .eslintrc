@@ -11,7 +11,6 @@
       { "argsIgnorePattern": "res|next|resolve|reject|^err" }
     ],
     "arrow-body-style": [2, "as-needed"],
-    "import/prefer-default-export": 1,
     "import/no-dynamic-require": "warn",
     "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
     "max-len": "off",
@@ -19,7 +18,9 @@
     "jest/no-focused-tests": "error",
     "jest/no-identical-title": "error",
     "jest/prefer-to-have-length": "warn",
-    "jest/valid-expect": "error"
+    "jest/valid-expect": "error",
+    "no-underscore-dangle": "off",
+    "import/prefer-default-export": "off"
   },
   "plugins": ["jest"]
 }

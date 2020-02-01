@@ -21,10 +21,12 @@ export const refResolvers = {
       return membersStore(firestore)
         .findPartners(id)
         .then(r =>
-          r.map(s => ({
-            ...s,
-            __typename: 'Profile',
-          })),
+          r
+            .filter(u => u.isSponsoredFeatured)
+            .map(s => ({
+              ...s,
+              __typename: 'Profile',
+            })),
         );
     },
 
