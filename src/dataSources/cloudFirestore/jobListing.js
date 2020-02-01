@@ -1,6 +1,6 @@
 import debug from 'debug';
 
-const dlog = debug('that:api:events:datasources:firebase:joblistings');
+const dlog = debug('that:api:partners:dataSources:firebase:jobListings');
 
 function jobListings(dbInstance) {
   dlog('instance created');

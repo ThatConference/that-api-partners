@@ -18,7 +18,7 @@ const partner = dbInstance => {
   }
 
   async function get(id) {
-    dlog('getting partner for %o', id);
+    dlog('get', id);
     const docRef = dbInstance.doc(`${collectionName}/${id}`);
     const doc = await docRef.get();
 

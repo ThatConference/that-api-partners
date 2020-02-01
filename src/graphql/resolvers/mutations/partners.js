@@ -1,5 +1,9 @@
 /* eslint-disable import/prefer-default-export */
+import debug from 'debug';
+
 import partnerStore from '../../../dataSources/cloudFirestore/partner';
+
+const dlog = debug('that:api:partners:mutations:PartnersMutation');
 
 export const fieldResolvers = {
   PartnersMutation: {
@@ -8,12 +12,12 @@ export const fieldResolvers = {
       { partner },
       { dataSources: { firestore, logger } },
     ) => {
-      logger.debug('PartnersMutation:create called.');
+      dlog('create');
       return partnerStore(firestore, logger).create(partner);
     },
 
     delete: (parent, { id }, { dataSources: { firestore, logger } }) => {
-      logger.debug('PartnersMutation:delete called.');
+      dlog('delete');
       throw new Error('Not Implemented yet.');
     },
 

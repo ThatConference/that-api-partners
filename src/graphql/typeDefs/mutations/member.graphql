@@ -1,0 +1,5 @@
+type PartnerMemberMutation {
+  add(member: PartnerMemberAddInput!): Profile! @auth(requires: "admin")
+  remove: ID @auth(requires: "admin")
+  update(member: PartnerMemberUpdateInput!): Profile! @auth(requires: "admin")
+}

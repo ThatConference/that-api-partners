@@ -1,4 +1,4 @@
 type JobListingMutation {
   update(jobListing: JobListingUpdateInput!): JobListing!
-    @auth(requires: "partners")
+    @auth(requires: "admin")
 }

@@ -1,5 +1,5 @@
 type PartnersMutation {
-  create(partner: PartnerCreateInput!): Partner! @auth(requires: "partners")
-  delete(id: ID!): ID @auth(requires: "partners")
-  partner(id: ID!): PartnerMutation @auth(requires: "partners")
+  create(partner: PartnerCreateInput!): Partner! @auth(requires: "admin")
+  delete(id: ID!): ID @auth(requires: "admin")
+  partner(id: ID!): PartnerMutation @auth(requires: "admin")
 }

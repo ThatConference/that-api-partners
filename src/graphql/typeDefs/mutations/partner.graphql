@@ -1,4 +1,6 @@
 type PartnerMutation {
-  update(partner: PartnerUpdateInput!): Partner! @auth(requires: "partners")
-  jobListings: JobListingsMutation @auth(requires: "partners")
+  update(partner: PartnerUpdateInput!): Partner! @auth(requires: "admin")
+  jobListings: JobListingsMutation @auth(requires: "admin")
+  session(id: ID!): PartnerSessionMutation @auth(requires: "admin")
+  member(id: ID!): PartnerMemberMutation @auth(requires: "admin")
 }

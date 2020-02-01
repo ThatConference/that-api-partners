@@ -2,86 +2,48 @@
 /* eslint-disable import/prefer-default-export */
 import debug from 'debug';
 
-import partnerStore from '../../../dataSources/cloudFirestore/partner';
+import jobListingStore from '../../../dataSources/cloudFirestore/jobListing';
+import membersStore from '../../../dataSources/cloudFirestore/members';
+import sessionsStore from '../../../dataSources/cloudFirestore/sessions';
 
-const dlog = debug('that:api:events:query:partner');
+const dlog = debug('that:api:partners:query:partner');
 
 export const refResolvers = {
   Partner: {
     __resolveReference({ id }, { dataSources: { firestore, partnerLoader } }) {
-      dlog('Partner:federated resolveRef');
+      dlog('resolve reference');
       return partnerLoader.load(id);
     },
 
-    members: ({ id }) => {
-      dlog('Partner:members ref');
+    members: ({ id }, _, { dataSources: { firestore } }) => {
+      dlog('members');
 
-      if (id === 'wPA6h12zXHt5q8240bCg') {
-        return [
-          {
+      return membersStore(firestore)
+        .findPartners(id)
+        .then(r =>
+          r.map(s => ({
+            ...s,
             __typename: 'Profile',
-            id: '1234',
-          },
-          {
-            __typename: 'Profile',
-            id: '4321',
-          },
-        ];
-      }
-
-      return [];
+          })),
+        );
     },
 
-    sessions: ({ id }) => {
-      dlog('Partner:sessions ref');
+    sessions: ({ id }, _, { dataSources: { firestore } }) => {
+      dlog('sessions');
 
-      if (id === 'wPA6h12zXHt5q8240bCg') {
-        return [
-          {
+      return sessionsStore(firestore)
+        .findPartners(id)
+        .then(r =>
+          r.map(s => ({
+            ...s,
             __typename: 'Session',
-            id: '1',
-          },
-          {
-            __typename: 'Session',
-            id: '2',
-          },
-        ];
-      }
-
-      return [];
+          })),
+        );
     },
 
-    jobListings: ({ id }) => {
-      if (id === 'wPA6h12zXHt5q8240bCg') {
-        return [
-          {
-            id: '1234',
-            title: 'fake as',
-            description: 'fake as',
-            jobType: 'PART_TIME',
-            internship: false,
-            experienceLevel: 'SENIOR',
-            relocationOffered: false,
-            remote: false,
-            role: 'fake as',
-            featured: false,
-          },
-          {
-            id: '2345',
-            title: 'another great job',
-            description: 'fake as',
-            jobType: 'PART_TIME',
-            internship: false,
-            experienceLevel: 'SENIOR',
-            relocationOffered: false,
-            remote: false,
-            role: 'fake as',
-            featured: false,
-          },
-        ];
-      }
-
-      return [];
+    jobListings: ({ id }, _, { dataSources: { firestore } }) => {
+      dlog('jobListings');
+      return jobListingStore(firestore).findPartners(id);
     },
   },
 };
