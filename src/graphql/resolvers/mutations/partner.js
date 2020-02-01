@@ -2,7 +2,7 @@
 import debug from 'debug';
 import partnerStore from '../../../dataSources/cloudFirestore/partner';
 
-const dlog = debug('that:api:partners:partner:mutation');
+const dlog = debug('that:api:partners:mutations:PartnerMutation');
 
 export const fieldResolvers = {
   PartnerMutation: {
@@ -15,5 +15,7 @@ export const fieldResolvers = {
       return partnerStore(firestore).update(partnerId, partner);
     },
     jobListings: ({ partnerId }) => ({ partnerId }),
+    member: ({ partnerId }, { id }) => ({ partnerId, memberId: id }),
+    session: ({ partnerId }, { id }) => ({ partnerId, sessionId: id }),
   },
 };

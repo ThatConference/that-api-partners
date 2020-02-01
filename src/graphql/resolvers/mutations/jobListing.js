@@ -3,7 +3,7 @@ import debug from 'debug';
 
 import jobListingStore from '../../../dataSources/cloudFirestore/jobListing';
 
-const dlog = debug('that:api:partners:JobListingMutation');
+const dlog = debug('that:api:partners:mutations:JobListingMutation');
 
 export const fieldResolvers = {
   JobListingMutation: {

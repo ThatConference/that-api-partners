@@ -1,6 +1,10 @@
+import debug from 'debug';
+
+const dlog = debug('that:api:partners:mutations:root');
+
 const resolvers = {
-  partners: (parent, args, { dataSources: { logger } }) => {
-    logger.info('root:partners mutation called');
+  partners: () => {
+    dlog('partners');
     return {};
   },
 };
