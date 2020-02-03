@@ -6,7 +6,7 @@ import {
 } from 'apollo-server-cloud-functions';
 import { buildFederatedSchema } from '@apollo/federation';
 import debug from 'debug';
-import { security } from '@thatconference/api';
+import { security, graph } from '@thatconference/api';
 import _ from 'lodash';
 import DataLoader from 'dataloader';
 
@@ -18,6 +18,7 @@ import partnerStore from '../dataSources/cloudFirestore/partner';
 
 const dlog = debug('that:api:partners:graphServer');
 const jwtClient = security.jwt();
+const { lifecycle } = graph.events;
 
 // convert our raw schema to gql
 const typeDefs = gql`
@@ -98,6 +99,21 @@ const createServer = ({ dataSources }, enableMocking = false) => {
 
       return context;
     },
+
+    plugins: [
+      {
+        requestDidStart(req) {
+          return {
+            executionDidStart(requestContext) {
+              lifecycle.emit('executionDidStart', {
+                service: 'that:api:partners',
+                requestContext,
+              });
+            },
+          };
+        },
+      },
+    ],
 
     formatError: err => {
       logger.warn('graphql error', err);
