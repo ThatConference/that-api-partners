@@ -1,9 +1,9 @@
 input PartnerSessionAddInput {
-  # is this session a sponsored session
+  "is this session a sponsored session"
   isSponsored: Boolean!
 }
 
 input PartnerSessionUpdateInput {
-  # is this session a sponsored session
+  "is this session a sponsored session"
   isSponsored: Boolean
 }

@@ -1,0 +1,5 @@
+extend type AcceptedSession @key(fields: "id") {
+  id: ID! @external
+
+  isSponsored: Boolean
+}
