@@ -1,5 +1,6 @@
 type JobListing @key(fields: "id") {
-  id: ID
+  id: ID!
+  slug: String
   title: String
   description: String
   jobType: JobType

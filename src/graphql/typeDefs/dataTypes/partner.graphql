@@ -25,6 +25,7 @@ type Partner @key(fields: "id") {
   facebook: URL
   twitch: URL
 
+  jobListing(slug: String!): JobListing
   jobListings: [JobListing]
 
   chat: URL
