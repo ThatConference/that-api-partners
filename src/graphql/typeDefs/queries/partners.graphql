@@ -1,5 +1,6 @@
 type PartnersQuery {
   all: [Partner]
   partner(id: ID!): Partner
-  partnerBySlug(slug: String!): [Partner]
+
+  partnerBySlug(slug: String!): Partner
 }

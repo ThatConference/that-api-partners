@@ -43,6 +43,11 @@ export const refResolvers = {
         );
     },
 
+    jobListing: ({ id }, { slug }, { dataSources: { firestore } }) => {
+      dlog('jobListings');
+      return jobListingStore(firestore).findBySlug(id, slug);
+    },
+
     jobListings: ({ id }, _, { dataSources: { firestore } }) => {
       dlog('jobListings');
       return jobListingStore(firestore).findPartners(id);

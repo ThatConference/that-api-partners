@@ -1,23 +1,23 @@
-/* eslint-disable import/prefer-default-export */
 import debug from 'debug';
+
 import partnerStore from '../../../dataSources/cloudFirestore/partner';
 
-const dlog = debug('asdf');
+const dlog = debug('that:api:partners:query:PartnersQuery');
 
 export const fieldResolvers = {
   PartnersQuery: {
-    all: async (parent, args, { dataSources }) => {
-      dlog('asdf');
+    all: (_, __, { dataSources }) => {
+      dlog('all');
       return partnerStore(dataSources.firestore).getAll();
     },
 
-    partner: async (parent, { id }, { dataSources }) => {
-      dlog('asdf');
+    partner: (_, { id }, { dataSources }) => {
+      dlog('partner');
       return partnerStore(dataSources.firestore).get(id);
     },
 
-    partnerBySlug: async (parent, { slug }, { dataSources }) => {
-      dlog('asdf');
+    partnerBySlug: async (_, { slug }, { dataSources }) => {
+      dlog('partnerBySlug');
       return partnerStore(dataSources.firestore).findBySlug(slug);
     },
   },

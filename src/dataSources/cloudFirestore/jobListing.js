@@ -81,7 +81,34 @@ function jobListings(dbInstance) {
     });
   }
 
-  return { add, update, remove, findAll, findPartners };
+  async function findBySlug(id, slug) {
+    dlog('findBySlug');
+
+    const colSnapshot = dbInstance
+      .doc(`${collectionName}/${id}`)
+      .collection(subCollectionName)
+      .where('slug', '==', slug.toLowerCase());
+
+    const { size, docs } = await colSnapshot.get();
+
+    let result = null;
+
+    if (size === 1) {
+      dlog('1');
+      const [d] = docs;
+
+      result = {
+        id: d.id,
+        ...d.data(),
+      };
+    } else if (size > 1) {
+      throw new Error(`Multiple Job Listings Slugs Found for ${slug}`);
+    }
+
+    return result;
+  }
+
+  return { add, update, remove, findAll, findPartners, findBySlug };
 }
 
 export default jobListings;

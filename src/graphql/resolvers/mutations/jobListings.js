@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import debug from 'debug';
+import slugify from 'slugify';
 
 import jobListingStore from '../../../dataSources/cloudFirestore/jobListing';
 
@@ -9,7 +10,13 @@ export const fieldResolvers = {
   JobListingsMutation: {
     create: ({ partnerId }, { jobListing }, { dataSources: { firestore } }) => {
       dlog('create');
-      return jobListingStore(firestore).add(partnerId, jobListing);
+
+      const modifiedJobListing = {
+        slug: slugify(jobListing.title.toLowerCase()),
+        ...jobListing,
+      };
+
+      return jobListingStore(firestore).add(partnerId, modifiedJobListing);
     },
 
     delete: ({ partnerId }, { id }, { dataSources: { firestore } }) => {

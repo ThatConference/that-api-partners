@@ -29,19 +29,26 @@ const partner = dbInstance => {
   }
 
   async function findBySlug(slug) {
-    const docRef = partnersCollection.where('slug', '==', slug);
-    const docs = await docRef.get();
+    dlog('findBySlug %s', slug);
 
-    const results = [];
+    const collectionSnapshot = partnersCollection.where('slug', '==', slug);
+    const { size, docs } = await collectionSnapshot.get();
 
-    docs.forEach(d => {
-      results.push({
+    let result = null;
+
+    if (size === 1) {
+      dlog('1');
+      const [d] = docs;
+
+      result = {
         id: d.id,
         ...d.data(),
-      });
-    });
+      };
+    } else if (size > 1) {
+      throw new Error(`Multiple Company Slugs Found for ${slug}`);
+    }
 
-    return results;
+    return result;
   }
 
   async function getAll() {
