@@ -16,7 +16,7 @@ export const fieldResolvers = {
       return partnerStore(dataSources.firestore).get(id);
     },
 
-    partnerBySlug: async (_, { slug }, { dataSources }) => {
+    partnerBySlug: (_, { slug }, { dataSources }) => {
       dlog('partnerBySlug');
       return partnerStore(dataSources.firestore).findBySlug(slug);
     },

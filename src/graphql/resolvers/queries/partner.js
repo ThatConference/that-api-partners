@@ -1,5 +1,3 @@
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable import/prefer-default-export */
 import debug from 'debug';
 
 import jobListingStore from '../../../dataSources/cloudFirestore/jobListing';
