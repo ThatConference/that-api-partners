@@ -46,9 +46,13 @@ export const refResolvers = {
       return jobListingStore(firestore).findBySlug(id, slug);
     },
 
-    jobListings: ({ id }, _, { dataSources: { firestore } }) => {
+    jobListings: (
+      { id },
+      { isFeatured = false },
+      { dataSources: { firestore } },
+    ) => {
       dlog('jobListings');
-      return jobListingStore(firestore).findPartners(id);
+      return jobListingStore(firestore).findPartners(id, isFeatured);
     },
   },
 };
