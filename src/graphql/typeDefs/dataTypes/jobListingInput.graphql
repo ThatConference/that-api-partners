@@ -6,6 +6,7 @@ input JobListingCreateInput {
   internship: Boolean
   experienceLevel: ExperienceLevel
   relocationOffered: Boolean
+  applyNowLink: URL
 
   remote: Boolean
   role: String
@@ -20,6 +21,7 @@ input JobListingUpdateInput {
   internship: Boolean
   experienceLevel: ExperienceLevel
   relocationOffered: Boolean
+  applyNowLink: URL
 
   remote: Boolean
   role: String
