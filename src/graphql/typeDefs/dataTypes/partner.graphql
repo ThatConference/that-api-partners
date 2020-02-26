@@ -26,7 +26,7 @@ type Partner @key(fields: "id") {
   twitch: URL
 
   jobListing(slug: String!): JobListing
-  jobListings: [JobListing]
+  jobListings(isFeatured: Boolean): [JobListing]
 
   chat: URL
   blog: URL

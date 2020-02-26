@@ -24,11 +24,20 @@ function jobListings(dbInstance) {
     return results;
   }
 
-  async function findPartners(partnerId) {
+  async function findPartners(partnerId, isFeatured) {
     dlog('findPartners');
-    const colSnapshot = dbInstance
-      .doc(`${collectionName}/${partnerId}`)
-      .collection(subCollectionName);
+    let colSnapshot;
+
+    if (isFeatured) {
+      colSnapshot = dbInstance
+        .doc(`${collectionName}/${partnerId}`)
+        .collection(subCollectionName)
+        .where('featured', '==', isFeatured);
+    } else {
+      colSnapshot = dbInstance
+        .doc(`${collectionName}/${partnerId}`)
+        .collection(subCollectionName);
+    }
 
     const { docs } = await colSnapshot.get();
 
