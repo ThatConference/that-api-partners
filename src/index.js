@@ -101,18 +101,6 @@ function createUserContext(req, res, next) {
   next();
 }
 
-const graphApi = graphServer.createHandler({
-  cors: {
-    origin: '*',
-    credentials: true,
-  },
-});
-
-function apiHandler(req, res) {
-  dlog('api handler called');
-  graphApi(req, res);
-}
-
 function failure(err, req, res, next) {
   dlog('error %o', err);
 
@@ -127,15 +115,13 @@ function failure(err, req, res, next) {
     .json(err);
 }
 
-/**
- * http middleware function that follows adhering to express's middleware.
- * Last item in the middleware chain.
- * This is your api handler for your serverless function
- */
-export const graphEndpoint = api
+api
+  .set('etag', false)
   .use(responseTime())
   .use(requestLogger('that:api:partners').handler)
   .use(useSentry)
   .use(createUserContext)
-  .use(apiHandler)
   .use(failure);
+
+graphServer.applyMiddleware({ app: api, path: '/' });
+api.listen({ port: 8002 });
