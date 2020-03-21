@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import connect from 'connect';
+import connect from 'express';
 import debug from 'debug';
 import { Firestore } from '@google-cloud/firestore';
 import pino from 'pino';
