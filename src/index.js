@@ -9,7 +9,18 @@ import uuid from 'uuid/v4';
 import { middleware } from '@thatconference/api';
 
 import apolloGraphServer from './graphql';
-import { version } from '../package.json';
+// import { version } from '../package.json';
+
+let version;
+(async () => {
+  let p;
+  try {
+    p = await import('./package.json');
+  } catch {
+    p = await import('../package.json');
+  }
+  version = p.version;
+})();
 
 const dlog = debug('that:api:partners:index');
 const defaultVersion = `that-api-gateway@${version}`;
@@ -124,4 +135,5 @@ api
   .use(failure);
 
 graphServer.applyMiddleware({ app: api, path: '/' });
-api.listen({ port: 8002 });
+const port = process.env.PORT || 8002;
+api.listen({ port }, () => dlog(`partners running on port %d`, port));
