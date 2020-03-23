@@ -11,4 +11,4 @@ COPY __build__ ./
 # install production node_modules
 RUN ls -lasi && npm install --production
 
-CMD [ "node", "index.js" ]
+CMD [ "npm", "start" ]
