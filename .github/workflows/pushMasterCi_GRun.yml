@@ -77,7 +77,7 @@ jobs:
       - name: Publish image to gcp
         run: docker push us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/partners
       - name: Deploy to Cloud Run
-        run: gcloud run deploy partners --image us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/partners --region=us-central1 --platform=managed --allow-unauthenticated --memory=256Mi
+        run: gcloud run deploy partners --image us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/partners --region=us-central1 --platform=managed --allow-unauthenticated --timeout=300 --memory=256Mi --cpu=1
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
       - name: Slack Notification

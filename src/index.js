@@ -127,7 +127,6 @@ function failure(err, req, res, next) {
 }
 
 api
-  .set('etag', false)
   .use(responseTime())
   .use(requestLogger('that:api:partners').handler)
   .use(useSentry)
