@@ -47,7 +47,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
         if: job.status == 'failure' || job.status == 'cancelled'
 
-  deploy-partners:
+  deploy:
     name: Deploy Partners to Cloud Run
     needs: build
     runs-on: ubuntu-latest
@@ -62,10 +62,10 @@ jobs:
         with:
           version: '281.0.0'
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
-      - name: Load gcloud beta bits
-        run: gcloud components install beta
-        env:
-          CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+      # - name: Load gcloud beta bits
+      #   run: gcloud components install beta
+      #   env:
+      #     CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
       - name: gcloud docker cred helper
         run: gcloud auth configure-docker
         env:
@@ -77,9 +77,35 @@ jobs:
       - name: Publish image to gcp
         run: docker push us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/partners
       - name: Deploy to Cloud Run
-        run: gcloud run deploy partners --image us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/partners --region=us-central1 --platform=managed --allow-unauthenticated --timeout=300 --memory=256Mi --cpu=1
+        run: |
+          gcloud secrets versions access latest --secret any-secrets2array-util_file > secrets2array.sh && chmod +x secrets2array.sh
+          GCR_ENV_VARS=$(gcloud secrets versions access latest --secret prod-api-non_gateway-env | ./secrets2array.sh)
+          C_CNT=$(cat __build__/ccnt.txt)
+          SENTRYREL=SENTRY_VERSION=that-api-members@$(cat __build__/package.json | jq '.version' | tr -d '"')-$C_CNT.$(echo $GITHUB_SHA | cut -c1-7)
+          GCR_ENV_VARS="${GCR_ENV_VARS}, ${SENTRYREL}"
+          gcloud run deploy partners --image us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/partners --region=us-central1 --platform=managed --allow-unauthenticated --set-env-vars="$GCR_ENV_VARS" --timeout=300 --memory=256Mi --cpu=1
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v2
+        with:
+          status: ${{ job.status }}
+          author: Push Master CI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
+        if: job.status == 'failure' || job.status == 'cancelled'
+
+  post:
+    name: GET Schema Refresh Request
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: GET request refresh
+        run: |
+          REFRESH_RESULT=$(curl -s -f https://api.that.tech/.internal/apollo/schema-refresh?src=partners | jq '.status')
+          echo result $REFRESH_RESULT
+          if [ $REFRESH_RESULT != '"reloaded"' ]; then exit 99; fi
       - name: Slack Notification
         uses: 8398a7/action-slack@v2
         with:
@@ -114,32 +140,3 @@ jobs:
 #       run: gcloud functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint --memory 512MB
 #       env:
 #         CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-#     - name: Slack Notification
-#       uses: 8398a7/action-slack@v2
-#       with:
-#         status: ${{ job.status }}
-#         author: Push Master CI
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
-#       if: job.status == 'failure' || job.status == 'cancelled'
-
-# post:
-#   name: GET Schema Refresh Request
-#   needs: [build, deploy]
-#   runs-on: ubuntu-latest
-#   steps:
-#     - name: GET request refresh
-#       run: |
-#         REFRESH_RESULT=$(curl -s -f https://api.that.tech/.internal/apollo/schema-refresh?src=partners | jq '.status')
-#         echo result $REFRESH_RESULT
-#         if [ $REFRESH_RESULT != '"reloaded"' ]; then exit 99; fi
-#     - name: Slack Notification
-#       uses: 8398a7/action-slack@v2
-#       with:
-#         status: ${{ job.status }}
-#         author: Push Master CI
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
-#       if: always()
