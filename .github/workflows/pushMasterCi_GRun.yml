@@ -4,7 +4,7 @@ name: Push Master CI for Cloud Run
 on:
   push:
     branches:
-      - cs/express
+      - master
 
 jobs:
   build:
@@ -15,10 +15,10 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Use Node.js 10.x
+      - name: Use Node.js 12.x
         uses: actions/setup-node@v1
         with:
-          node-version: 10.x
+          node-version: 12.x
       - name: npm ci, run validate
         run: |
           cp .env.sample .env
@@ -30,8 +30,7 @@ jobs:
           cp ./package.json __build__/
           cp ./package-lock.json __build__/
           cp ./Dockerfile __build__/
-          # git rev-list --count master > __build__/ccnt.txt
-          echo 0 > __build__/ccnt.txt
+          git rev-list --count master > __build__/ccnt.txt
       - name: Archive Build Artifact
         uses: actions/upload-artifact@v1
         with:
@@ -115,28 +114,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
         if: always()
-# ### Old Bits
-#     - name: write .env file and create version string
-#       run: |
-#         gcloud beta secrets versions access latest --secret prod-api-non_gateway-env > tc-api/.env
-#         C_CNT=$(cat tc-api/ccnt.txt)
-#         rm -f tc-api/ccnt.txt
-#         SENTRYREL=SENTRY_VERSION=that-api-partners@$(cat tc-api/package.json | jq '.version' | tr -d '"')-$C_CNT.$(echo $GITHUB_SHA | cut -c1-7)
-#         echo "" >> tc-api/.env
-#         echo $SENTRYREL >> tc-api/.env
-#         echo "::set-env name=SENTRYREL::$SENTRYREL"
-#       env:
-#         CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
-#     - name: Checks and verifications
-#       run: |
-#         echo "**********"
-#         echo $SENTRYREL
-#         echo $GITHUB_SHA
-#         echo $GITHUB_REF
-#         echo "**********"
-#         echo $PWD
-#         ls -lasiR
-#     - name: Run GCP Deploy Function - partners
-#       run: gcloud functions deploy partners --runtime nodejs10 --trigger-http --source $PWD/tc-api --entry-point graphEndpoint --memory 512MB
-#       env:
-#         CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
