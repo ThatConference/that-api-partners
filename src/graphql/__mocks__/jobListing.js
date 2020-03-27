@@ -1,9 +1,9 @@
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import faker from 'faker';
 
 const mockListing = () => ({
   __typename: 'JobListing',
-  id: uuid(),
+  id: uuidv4(),
   title: faker.lorem.sentence(),
   description: faker.lorem.paragraph(),
   role: faker.lorem.word(),

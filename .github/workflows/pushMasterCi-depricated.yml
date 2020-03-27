@@ -4,7 +4,7 @@ name: Push Master CI
 on:
   push:
     branches:
-      - master
+      - w96n5IKcNreDPU6P
 
 jobs:
   build:

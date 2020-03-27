@@ -1,10 +1,10 @@
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import faker from 'faker';
 import moment from 'moment';
 
 const mockPartner = () => ({
   __typename: 'Partner',
-  id: uuid(),
+  id: uuidv4(),
   year: moment().year,
   companyName: faker.company.companyName(),
   goals: ['just', 'be', 'awesome'],

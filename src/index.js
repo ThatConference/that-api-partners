@@ -1,15 +1,26 @@
 import 'dotenv/config';
-import connect from 'connect';
+import connect from 'express';
 import debug from 'debug';
 import { Firestore } from '@google-cloud/firestore';
 import pino from 'pino';
 import responseTime from 'response-time';
 import * as Sentry from '@sentry/node';
-import uuid from 'uuid/v4';
+import { v4 as uuidv4 } from 'uuid';
 import { middleware } from '@thatconference/api';
 
 import apolloGraphServer from './graphql';
-import { version } from '../package.json';
+// import { version } from '../package.json';
+
+let version;
+(async () => {
+  let p;
+  try {
+    p = await import('./package.json');
+  } catch {
+    p = await import('../package.json');
+  }
+  version = p.version;
+})();
 
 const dlog = debug('that:api:partners:index');
 const defaultVersion = `that-api-gateway@${version}`;
@@ -84,7 +95,7 @@ function createUserContext(req, res, next) {
 
   const correlationId = req.headers['that-correlation-id']
     ? req.headers['that-correlation-id']
-    : uuid();
+    : uuidv4();
 
   const contextLogger = logger.child({ correlationId });
 
@@ -101,18 +112,6 @@ function createUserContext(req, res, next) {
   next();
 }
 
-const graphApi = graphServer.createHandler({
-  cors: {
-    origin: '*',
-    credentials: true,
-  },
-});
-
-function apiHandler(req, res) {
-  dlog('api handler called');
-  graphApi(req, res);
-}
-
 function failure(err, req, res, next) {
   dlog('error %o', err);
 
@@ -127,15 +126,16 @@ function failure(err, req, res, next) {
     .json(err);
 }
 
-/**
- * http middleware function that follows adhering to express's middleware.
- * Last item in the middleware chain.
- * This is your api handler for your serverless function
- */
-export const graphEndpoint = api
+api
   .use(responseTime())
   .use(requestLogger('that:api:partners').handler)
   .use(useSentry)
   .use(createUserContext)
-  .use(apiHandler)
   .use(failure);
+
+graphServer.applyMiddleware({ app: api, path: '/' });
+
+// const port = process.env.PORT || 8002;
+// api.listen({ port }, () => dlog(`partners running on port %d`, port));
+
+export const handler = api;
