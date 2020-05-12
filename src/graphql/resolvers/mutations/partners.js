@@ -6,9 +6,9 @@ const dlog = debug('that:api:partners:mutations:PartnersMutation');
 
 export const fieldResolvers = {
   PartnersMutation: {
-    create: (_, { partner }, { dataSources: { firestore, logger } }) => {
+    create: (_, { partner }, { dataSources: { firestore } }) => {
       dlog('create');
-      return partnerStore(firestore, logger).create(partner);
+      return partnerStore(firestore).create(partner);
     },
 
     delete: () => {

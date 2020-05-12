@@ -74,18 +74,14 @@ const partner = dbInstance => {
   }
 
   // https://googleapis.dev/nodejs/firestore/latest/DocumentReference.html#update
-  async function update(id, newPartner) {
+  function update(id, newPartner) {
     dlog('updating id %o', id);
 
     const scrubbedPartner = newPartner;
 
     const docRef = dbInstance.doc(`${collectionName}/${id}`);
-    await docRef.update(scrubbedPartner); // would be nice to handle this better rather than just echo'n our input
 
-    return {
-      id,
-      ...scrubbedPartner,
-    };
+    return docRef.update(scrubbedPartner).then(() => get(id));
   }
 
   return { create, getAll, get, findBySlug, update, getbatchByIds };
