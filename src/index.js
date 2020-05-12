@@ -2,7 +2,6 @@ import 'dotenv/config';
 import connect from 'express';
 import debug from 'debug';
 import { Firestore } from '@google-cloud/firestore';
-import pino from 'pino';
 import responseTime from 'response-time';
 import * as Sentry from '@sentry/node';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,18 +27,6 @@ const firestore = new Firestore();
 const api = connect();
 const { requestLogger } = middleware;
 
-const logger = pino({
-  level: process.env.LOG_LEVEL || 'info',
-  prettyPrint: JSON.parse(process.env.LOG_PRETTY_PRINT || false)
-    ? { colorize: true }
-    : false,
-  mixin() {
-    return {
-      service: 'that-api-partners',
-    };
-  },
-});
-
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.THAT_ENVIRONMENT,
@@ -54,7 +41,6 @@ Sentry.configureScope(scope => {
 const createConfig = () => ({
   dataSources: {
     sentry: Sentry,
-    logger,
     firestore,
   },
 });
@@ -97,14 +83,15 @@ function createUserContext(req, res, next) {
     ? req.headers['that-correlation-id']
     : uuidv4();
 
-  const contextLogger = logger.child({ correlationId });
+  Sentry.configureScope(scope => {
+    scope.setTag('correlationId', correlationId);
+  });
 
   req.userContext = {
     locale: req.headers.locale,
     authToken: req.headers.authorization,
     correlationId,
     sentry: Sentry,
-    logger: contextLogger,
     enableMocking: enableMocking(),
     firestore: new Firestore(),
   };
@@ -114,10 +101,6 @@ function createUserContext(req, res, next) {
 
 function failure(err, req, res, next) {
   dlog('error %o', err);
-
-  logger.error(err);
-  logger.trace('Middleware Catch All');
-
   Sentry.captureException(err);
 
   res

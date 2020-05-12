@@ -36,7 +36,6 @@ const typeDefs = gql`
  */
 const createServer = ({ dataSources }, enableMocking = false) => {
   let federatedSchemas = {};
-  const { logger } = dataSources;
 
   if (!enableMocking) {
     federatedSchemas = buildFederatedSchema([{ typeDefs, resolvers }]);
@@ -118,8 +117,6 @@ const createServer = ({ dataSources }, enableMocking = false) => {
     ],
 
     formatError: err => {
-      logger.warn('graphql error', err);
-
       dataSources.sentry.captureException(err);
 
       return err;
