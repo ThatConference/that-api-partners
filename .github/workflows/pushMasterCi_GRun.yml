@@ -59,12 +59,8 @@ jobs:
       - name: Setup gcloud Actions
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
-          version: '281.0.0'
+          version: '305.0.0'
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
-      # - name: Load gcloud beta bits
-      #   run: gcloud components install beta
-      #   env:
-      #     CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
       - name: gcloud docker cred helper
         run: gcloud auth configure-docker
         env:
