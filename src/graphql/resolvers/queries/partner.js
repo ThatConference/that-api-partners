@@ -1,10 +1,13 @@
 import debug from 'debug';
+import { dataSources } from '@thatconference/api';
 
 import jobListingStore from '../../../dataSources/cloudFirestore/jobListing';
 import membersStore from '../../../dataSources/cloudFirestore/members';
 import sessionsStore from '../../../dataSources/cloudFirestore/sessions';
 
 const dlog = debug('that:api:partners:query:partner');
+const favoriteStore = dataSources.cloudFirestore.favorites;
+const favoriteType = 'partner';
 
 export const refResolvers = {
   Partner: {
@@ -53,6 +56,28 @@ export const refResolvers = {
     ) => {
       dlog('jobListings');
       return jobListingStore(firestore).findPartners(id, isFeatured);
+    },
+
+    followCount: ({ id }, __, { dataSources: { firestore } }) => {
+      dlog('followCount called');
+      return favoriteStore(firestore).getFavoriteCount({
+        favoritedId: id,
+        favoriteType,
+      });
+    },
+
+    followers: (
+      { id },
+      { pageSize, cursor },
+      { dataSources: { firestore } },
+    ) => {
+      dlog('followers called');
+      return favoriteStore(firestore).getFollowersPaged({
+        favoritedId: id,
+        favoriteType,
+        pageSize,
+        cursor,
+      });
     },
   },
 };

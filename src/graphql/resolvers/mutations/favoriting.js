@@ -4,7 +4,7 @@ import { dataSources } from '@thatconference/api';
 import partnerStore from '../../../dataSources/cloudFirestore/partner';
 
 const favoriteStore = dataSources.cloudFirestore.favorites;
-const favoriteType = 'community';
+const favoriteType = 'partner';
 
 const dlog = debug('that:api:partners:mutations:PartnersMutation');
 

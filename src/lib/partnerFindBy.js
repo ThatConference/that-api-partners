@@ -14,7 +14,7 @@ export default function eventFindBy(findBy, firestore) {
 
   let result = null;
   if (slug && !id) {
-    dlog('find event id by slug');
+    dlog('find partner id by slug');
     return partnerStore(firestore)
       .findIdFromSlug(slug)
       .then(d => {
@@ -36,9 +36,9 @@ export default function eventFindBy(findBy, firestore) {
     .then(e => {
       if (e) {
         if (slug && slug !== e.slug)
-          throw new Error('Event slug and id provided do not match.');
+          throw new Error('Partner slug and id provided do not match.');
         result = {
-          eventId: e.id,
+          partnerId: e.id,
           slug: e.slug,
         };
       }

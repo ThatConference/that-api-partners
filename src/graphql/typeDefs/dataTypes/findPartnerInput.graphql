@@ -1,4 +1,4 @@
-input FindMemberInput {
+input FindPartnerInput {
   "id of partner. provide this or slug"
   id: ID
   "slug of partner. provide this or id"

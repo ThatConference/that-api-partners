@@ -34,5 +34,12 @@ type Partner @key(fields: "id") {
 
   "The list of sessions for this partner"
   sessions: [AcceptedSession]
+  "The list of members associated with this partner"
   members: [PublicProfile]
+
+  "Total follower count includes private and public profile follows"
+  followCount: Int
+
+  "Members with public profile following/favoriting community. Defaults: pageSize: 20"
+  followers(pageSize: Int, cursor: String): PagedMember
 }
