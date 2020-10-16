@@ -1,12 +1,12 @@
 input PartnerCreateInput {
-  companyName: String
-  companyLogo: URL
-  website: URL
-  goals: [String]
+  companyName: String!
+  companyLogo: URL!
+  website: URL!
+  slug: Slug!
 
-  slug: String
   heroImage: URL
   aboutUs: String
+  goals: [String]
 
   addressLineOne: String
   addressLineTwo: String
@@ -35,7 +35,7 @@ input PartnerUpdateInput {
   website: URL
   goals: [String]
 
-  slug: String
+  slug: Slug
   heroImage: URL
   aboutUs: String
 

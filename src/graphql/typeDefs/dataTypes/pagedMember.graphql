@@ -1,0 +1,4 @@
+type PagedMember {
+  cursor: String!
+  members: [PublicProfile]
+}

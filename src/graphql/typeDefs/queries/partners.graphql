@@ -1,6 +1,6 @@
 type PartnersQuery {
+  "all partners"
   all: [Partner]
-  partner(id: ID!): Partner
-
-  partnerBySlug(slug: String!): Partner
+  "Query actions on a specific partner"
+  partner(findBy: FindPartnerInput!): Partner
 }

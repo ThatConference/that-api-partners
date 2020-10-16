@@ -1,6 +1,7 @@
 import debug from 'debug';
 
 import partnerStore from '../../../dataSources/cloudFirestore/partner';
+import partnerFindBy from '../../../lib/partnerFindBy';
 
 const dlog = debug('that:api:partners:query:PartnersQuery');
 
@@ -11,14 +12,11 @@ export const fieldResolvers = {
       return partnerStore(dataSources.firestore).getAll();
     },
 
-    partner: (_, { id }, { dataSources }) => {
+    partner: (_, { findBy }, { dataSources: { firestore } }) => {
       dlog('partner');
-      return partnerStore(dataSources.firestore).get(id);
-    },
-
-    partnerBySlug: (_, { slug }, { dataSources }) => {
-      dlog('partnerBySlug');
-      return partnerStore(dataSources.firestore).findBySlug(slug);
+      return partnerFindBy(findBy, firestore).then(d =>
+        partnerStore(firestore).get(d.partnerId),
+      );
     },
   },
 };
