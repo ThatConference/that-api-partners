@@ -12,7 +12,7 @@ export default function eventFindBy(findBy, firestore) {
       `partner findBy requires an id or slug. Neither were provided`,
     );
 
-  let result = null;
+  let result = {};
   if (slug && !id) {
     dlog('find partner id by slug');
     return partnerStore(firestore)

@@ -22,10 +22,21 @@ const partner = dbInstance => {
     const docRef = dbInstance.doc(`${collectionName}/${id}`);
     const doc = await docRef.get();
 
-    return {
-      id: doc.id,
-      ...doc.data(),
-    };
+    let result = null;
+    if (doc.exists) {
+      result = {
+        id: doc.id,
+        ...doc.data(),
+      };
+    }
+
+    return result;
+  }
+
+  function getbatchByIds(ids) {
+    dlog('getting batch of partners for %o', ids);
+
+    return Promise.all(ids.map(id => get(id)));
   }
 
   async function findBySlug(slug) {
@@ -58,19 +69,6 @@ const partner = dbInstance => {
       id: d.id,
       ...d.data(),
     }));
-  }
-
-  function getbatchByIds(ids) {
-    dlog('getting batch of partners for %o', ids);
-
-    const docRefs = ids.map(id => dbInstance.doc(`${collectionName}/${id}`));
-
-    return Promise.all(docRefs.map(d => d.get())).then(res =>
-      res.map(r => ({
-        id: r.id,
-        ...r.data(),
-      })),
-    );
   }
 
   // https://googleapis.dev/nodejs/firestore/latest/DocumentReference.html#update
