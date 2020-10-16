@@ -18,5 +18,10 @@ export const fieldResolvers = {
         partnerStore(firestore).get(d.partnerId),
       );
     },
+
+    me: () => {
+      dlog('me called');
+      return {};
+    },
   },
 };

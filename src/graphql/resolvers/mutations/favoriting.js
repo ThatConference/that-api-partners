@@ -17,7 +17,7 @@ export const fieldResolvers = {
     ) => {
       dlog('toggle partner %s, for user %s', slug, user.sub);
       const fav = await favoriteStore(firestore).findFavoriteForMember({
-        favoritedId: partnerId,
+        favoritedId: partnerId || null,
         favoriteType,
         user,
       });

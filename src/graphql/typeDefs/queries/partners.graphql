@@ -3,4 +3,6 @@ type PartnersQuery {
   all: [Partner]
   "Query actions on a specific partner"
   partner(findBy: FindPartnerInput!): Partner
+  "Partner data in scope of logged in member"
+  me: MePartnerQuery @auth(requires: "members")
 }
