@@ -1,12 +1,12 @@
 input PartnerCreateInput {
-  companyName: String
-  companyLogo: URL
-  website: URL
-  goals: [String]
+  companyName: String!
+  companyLogo: URL!
+  website: URL!
+  slug: String!
 
-  slug: String
   heroImage: URL
   aboutUs: String
+  goals: [String]
 
   addressLineOne: String
   addressLineTwo: String

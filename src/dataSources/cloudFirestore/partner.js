@@ -4,12 +4,12 @@ const dlog = debug('that:api:partners:datasources:firebase:partner');
 
 const partner = dbInstance => {
   const collectionName = 'partners';
-  const partnersCollection = dbInstance.collection(collectionName);
+  const partnerCollection = dbInstance.collection(collectionName);
 
   async function create(newPartner) {
     const scrubbedPartner = newPartner;
 
-    const newDocument = await partnersCollection.add(scrubbedPartner);
+    const newDocument = await partnerCollection.add(scrubbedPartner);
 
     return {
       id: newDocument.id,
@@ -31,7 +31,7 @@ const partner = dbInstance => {
   async function findBySlug(slug) {
     dlog('findBySlug %s', slug);
 
-    const collectionSnapshot = partnersCollection.where('slug', '==', slug);
+    const collectionSnapshot = partnerCollection.where('slug', '==', slug);
     const { size, docs } = await collectionSnapshot.get();
 
     let result = null;
@@ -52,7 +52,7 @@ const partner = dbInstance => {
   }
 
   async function getAll() {
-    const { docs } = await partnersCollection.get();
+    const { docs } = await partnerCollection.get();
 
     return docs.map(d => ({
       id: d.id,
@@ -84,7 +84,53 @@ const partner = dbInstance => {
     return docRef.update(scrubbedPartner).then(() => get(id));
   }
 
-  return { create, getAll, get, findBySlug, update, getbatchByIds };
+  async function findIdFromSlug(slug) {
+    dlog('find id by slug %s', slug);
+    const slimslug = slug.trim().toLowerCase();
+    const { size, docs } = await partnerCollection
+      .where('slug', '==', slimslug)
+      .select()
+      .get();
+
+    let result = null;
+    if (size === 1) {
+      const [d] = docs;
+      result = {
+        id: d.id,
+        slug,
+      };
+    } else if (size > 1) {
+      throw new Error(`Multiple Community records found for slug ${slimslug}`);
+    }
+
+    dlog('result slug/id %o', result);
+    return result;
+  }
+
+  async function getSlug(id) {
+    dlog('find slug by id %s', id);
+    const doc = await partnerCollection.doc(id).get();
+    let result = null;
+    if (doc.exists) {
+      result = {
+        id: doc.id,
+        slug: doc.get('slug'),
+      };
+    }
+
+    return result;
+  }
+
+  return {
+    create,
+    get,
+    findBySlug,
+    getAll,
+    getbatchByIds,
+    update,
+    findIdFromSlug,
+    getSlug,
+  };
 };
 
 export default partner;

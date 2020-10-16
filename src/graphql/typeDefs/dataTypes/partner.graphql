@@ -1,13 +1,13 @@
 type Partner @key(fields: "id") {
   id: ID!
-  companyName: String
-  companyLogo: URL
-  website: URL
-  goals: [String]
-
-  slug: String
+  companyName: String!
+  companyLogo: URL!
+  website: URL!
+  slug: Slug!
   heroImage: URL
+
   aboutUs: String
+  goals: [String]
 
   addressLineOne: String
   addressLineTwo: String

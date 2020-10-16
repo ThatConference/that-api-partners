@@ -1,5 +1,11 @@
 type PartnersMutation {
+  "create a new partner"
   create(partner: PartnerCreateInput!): Partner! @auth(requires: "admin")
+  "Not implemented"
   delete(id: ID!): ID @auth(requires: "admin")
+  "provides actaions against a specific partner"
   partner(id: ID!): PartnerMutation @auth(requires: "admin")
+  "favoriting/following mutations for a specific partner"
+  favoriting(findBy: FindMemberInput!): PartnerFavoritingMutation
+    @auth(requires: "members")
 }

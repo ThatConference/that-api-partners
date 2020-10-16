@@ -9,6 +9,8 @@ import { fieldResolvers as jobListingFields } from './jobListing';
 import { fieldResolvers as sessionFields } from './session';
 import { fieldResolvers as memberFields } from './member';
 
+import { fieldResolvers as favoritingFields } from './favoriting';
+
 export default {
   ...rootMutations,
 };
@@ -20,4 +22,5 @@ export const fieldResolvers = {
   ...jobListingFields,
   ...memberFields,
   ...sessionFields,
+  ...favoritingFields,
 };
