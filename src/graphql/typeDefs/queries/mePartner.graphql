@@ -1,4 +1,4 @@
 type MePartnerQuery {
   "Partner favorite queries for logged in member"
-  favorites: PartnerFavoritesQuery @auth(requires: "members")
+  favorites: MePartnerFavoritesQuery @auth(requires: "members")
 }

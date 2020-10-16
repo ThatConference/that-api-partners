@@ -7,7 +7,7 @@ const favoriteStore = dataSources.cloudFirestore.favorites;
 const favoriteType = 'partner';
 
 export const fieldResolvers = {
-  PartnerFavoritesQuery: {
+  MePartnerFavoritesQuery: {
     ids: (_, __, { dataSources: { firestore }, user }) => {
       dlog('ids called');
       return favoriteStore(firestore)

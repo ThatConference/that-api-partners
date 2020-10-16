@@ -1,4 +1,4 @@
-type PartnerFavoritesQuery {
+type MePartnerFavoritesQuery {
   "all partner id's favorited by logged in member"
   ids: [ID] @auth(requires: "members")
 
