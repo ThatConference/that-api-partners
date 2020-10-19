@@ -1,0 +1,8 @@
+type MePartnerFavoritesQuery {
+  "all partner id's favorited by logged in member"
+  ids: [ID] @auth(requires: "members")
+
+  "paged list of partners favorited by logged in member"
+  partners(pageSize: Int, cursor: String): PagedPartner
+    @auth(requires: "members")
+}

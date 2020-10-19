@@ -63,7 +63,7 @@ const createServer = ({ dataSources }, enableMocking = false) => {
       const { firestore } = dataSources;
       const partnerLoader = new DataLoader(ids =>
         partnerStore(firestore)
-          .getbatchByIds(ids)
+          .getBatch(ids)
           .then(partners => ids.map(i => partners.find(p => p.id === i))),
       );
 

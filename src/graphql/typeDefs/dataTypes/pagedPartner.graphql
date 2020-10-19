@@ -1,0 +1,8 @@
+type PagedPartner {
+  "cursor to pass back for more pages"
+  cursor: String
+  "count of partners in this page"
+  count: Int
+  "list of partner"
+  partners: [Partner]
+}

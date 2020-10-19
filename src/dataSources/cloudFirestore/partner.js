@@ -33,7 +33,7 @@ const partner = dbInstance => {
     return result;
   }
 
-  function getbatchByIds(ids) {
+  function getBatch(ids) {
     dlog('getting batch of partners for %o', ids);
 
     return Promise.all(ids.map(id => get(id)));
@@ -124,7 +124,7 @@ const partner = dbInstance => {
     get,
     findBySlug,
     getAll,
-    getbatchByIds,
+    getBatch,
     update,
     findIdFromSlug,
     getSlug,
