@@ -13,6 +13,18 @@ export const fieldResolvers = {
       dlog('partner update called');
       return partnerStore(firestore).update(partnerId, partner, user);
     },
+    changeSlug: (
+      { partnerId },
+      { newSlug },
+      { dataSources: { firestore }, user },
+    ) => {
+      dlog('changeSlug called');
+      return partnerStore(firestore).changeSlug({
+        partnerId,
+        newSlug,
+        user,
+      });
+    },
     jobListings: ({ partnerId }) => ({ partnerId }),
     member: ({ partnerId }, { id }) => ({ partnerId, memberId: id }),
     session: ({ partnerId }, { id }) => ({ partnerId, sessionId: id }),

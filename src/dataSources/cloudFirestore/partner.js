@@ -213,6 +213,60 @@ const partner = dbInstance => {
     return result;
   }
 
+  async function changeSlug({ partnerId, newSlug, user }) {
+    dlog('changePartnerSlug called for: %s, newSlug: %s', partnerId, newSlug);
+    const isNewInUse = await slugStore(dbInstance).isSlugTaken(newSlug);
+    if (isNewInUse)
+      throw new Error('unable to change partner slug, new slug in use already');
+    const partnerDocRef = partnerCollection.doc(partnerId);
+    const docSnapshot = await partnerDocRef.get();
+    if (!docSnapshot.exists)
+      throw new Error(
+        'invalid partnerId provided, unable to change partnew slug',
+      );
+    const scrubbedPartner = scrubPartner({
+      partner: {
+        id: partnerDocRef.id,
+        slug: newSlug,
+      },
+      user,
+    });
+    const currentSlug = docSnapshot.get('slug');
+    const currentSlugDocRef = slugStore(dbInstance).getSlugDocRef(currentSlug);
+    const newSlugDocRef = slugStore(dbInstance).getSlugDocRef(newSlug);
+    const newSlugDoc = slugStore(dbInstance).makeSlugDoc({
+      slugName: newSlug,
+      type: 'partner',
+      referenceId: partnerDocRef.id,
+    });
+    newSlugDoc.createdAt = scrubbedPartner.lastUpdatedAt;
+
+    const writeBatch = dbInstance.batch();
+    writeBatch.delete(currentSlugDocRef);
+    writeBatch.update(partnerDocRef, scrubbedPartner);
+    writeBatch.create(newSlugDocRef, newSlugDoc);
+    let writeResult;
+    try {
+      writeResult = await writeBatch.commit();
+    } catch (err) {
+      dlog('failed batch write change partner slug');
+      Sentry.withScope(scope => {
+        scope.setLevel('error');
+        scope.setContext(
+          'failed batch write change partner slug',
+          { partnerDocRef, scrubbedPartner },
+          { newSlugDocRef, newSlugDoc },
+          { user: user.sub },
+        );
+        Sentry.captureException(err);
+      });
+      throw new Error('failed batch write change partner slug');
+    }
+    dlog('writeResult %o', writeResult);
+
+    return get(partnerDocRef.id);
+  }
+
   return {
     isSlugTaken,
     create,
@@ -223,6 +277,7 @@ const partner = dbInstance => {
     get,
     findIdFromSlug,
     getSlug,
+    changeSlug,
   };
 };
 

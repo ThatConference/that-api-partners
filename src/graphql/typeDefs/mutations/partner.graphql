@@ -1,6 +1,12 @@
 type PartnerMutation {
+  "update partner record details"
   update(partner: PartnerUpdateInput!): Partner! @auth(requires: "admin")
+  "change a partner's slug"
+  changeSlug(newSlug: Slug!): Partner @auth(requires: "admin")
+  "partner job listing mutations"
   jobListings: JobListingsMutation @auth(requires: "admin")
+  "partner session mutations. id is sessionId"
   session(id: ID!): PartnerSessionMutation @auth(requires: "admin")
+  "partner associated member mutations. id is memberId"
   member(id: ID!): PartnerMemberMutation @auth(requires: "admin")
 }

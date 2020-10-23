@@ -17,7 +17,10 @@ export const fieldResolvers = {
       throw new Error('Not Implemented yet.');
     },
 
-    partner: (_, { id }) => ({ partnerId: id }),
+    partner: (_, { findBy }, { dataSources: { firestore } }) => {
+      dlog('partner called %o', findBy);
+      return partnerFindBy(findBy, firestore);
+    },
 
     favoriting: (_, { findBy }, { dataSources: { firestore } }) => {
       dlog('favoriting called');
