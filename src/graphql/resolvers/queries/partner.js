@@ -79,5 +79,12 @@ export const refResolvers = {
         cursor,
       });
     },
+
+    lastUpdatedBy: ({ lastUpdatedBy }) => {
+      let result = null;
+      if (lastUpdatedBy) result = { id: lastUpdatedBy };
+
+      return result;
+    },
   },
 };

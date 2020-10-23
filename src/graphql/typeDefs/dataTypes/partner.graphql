@@ -42,4 +42,11 @@ type Partner @key(fields: "id") {
 
   "Members with public profile following/favoriting community. Defaults: pageSize: 20"
   followers(pageSize: Int, cursor: String): PagedMember
+
+  "date and time partner record created. initial records may be missing this date"
+  createdAt: Date
+  "date and time this record was last updated"
+  lastUpdatedAt: Date
+  "member who last updated this record"
+  lastUpdatedBy: PublicProfile
 }
