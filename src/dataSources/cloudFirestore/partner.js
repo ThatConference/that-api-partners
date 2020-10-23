@@ -18,33 +18,11 @@ function scrubPartner({ partner, isNew, user }) {
   if (user) {
     scrubbedPartner.lastUpdatedBy = user.sub;
   }
-  if (scrubbedPartner.companyLogo && scrubbedPartner.companyLogo.href)
-    scrubbedPartner.companyLogo = scrubbedPartner.companyLogo.href;
-  if (scrubbedPartner.website && scrubbedPartner.website.href)
-    scrubbedPartner.website = scrubbedPartner.website.href;
-  if (scrubbedPartner.heroImage && scrubbedPartner.heroImage.href)
-    scrubbedPartner.heroImage = scrubbedPartner.heroImage.href;
-
-  if (scrubbedPartner.linkedIn && scrubbedPartner.linkedIn.href)
-    scrubbedPartner.linkedIn = scrubbedPartner.linkedIn.href;
-  if (scrubbedPartner.github && scrubbedPartner.github.href)
-    scrubbedPartner.github = scrubbedPartner.github.href;
-  if (scrubbedPartner.youtube && scrubbedPartner.youtube.href)
-    scrubbedPartner.youtube = scrubbedPartner.youtube.href;
-  if (scrubbedPartner.instagram && scrubbedPartner.instagram.href)
-    scrubbedPartner.instagram = scrubbedPartner.instagram.href;
-  if (scrubbedPartner.twitter && scrubbedPartner.twitter.href)
-    scrubbedPartner.twitter = scrubbedPartner.twitter.href;
-  if (scrubbedPartner.facebook && scrubbedPartner.facebook.href)
-    scrubbedPartner.facebook = scrubbedPartner.facebook.href;
-  if (scrubbedPartner.twitch && scrubbedPartner.twitch.href)
-    scrubbedPartner.twitch = scrubbedPartner.twitch.href;
-  if (scrubbedPartner.chat && scrubbedPartner.chat.href)
-    scrubbedPartner.chat = scrubbedPartner.chat.href;
-  if (scrubbedPartner.blog && scrubbedPartner.blog.href)
-    scrubbedPartner.blog = scrubbedPartner.blog.href;
-  if (scrubbedPartner.vlog && scrubbedPartner.vlog.href)
-    scrubbedPartner.vlog = scrubbedPartner.vlog.href;
+  // rewite urls to hrefs
+  Object.keys(scrubbedPartner).forEach(key => {
+    const value = scrubbedPartner[key];
+    if (value instanceof URL) scrubbedPartner[key] = value.toString();
+  });
 
   return scrubbedPartner;
 }
