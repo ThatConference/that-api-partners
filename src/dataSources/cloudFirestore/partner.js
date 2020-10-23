@@ -18,6 +18,33 @@ function scrubPartner({ partner, isNew, user }) {
   if (user) {
     scrubbedPartner.lastUpdatedBy = user.sub;
   }
+  if (scrubbedPartner.companyLogo && scrubbedPartner.companyLogo.href)
+    scrubbedPartner.companyLogo = scrubbedPartner.companyLogo.href;
+  if (scrubbedPartner.website && scrubbedPartner.website.href)
+    scrubbedPartner.website = scrubbedPartner.website.href;
+  if (scrubbedPartner.heroImage && scrubbedPartner.heroImage.href)
+    scrubbedPartner.heroImage = scrubbedPartner.heroImage.href;
+
+  if (scrubbedPartner.linkedIn && scrubbedPartner.linkedIn.href)
+    scrubbedPartner.linkedIn = scrubbedPartner.linkedIn.href;
+  if (scrubbedPartner.github && scrubbedPartner.github.href)
+    scrubbedPartner.github = scrubbedPartner.github.href;
+  if (scrubbedPartner.youtube && scrubbedPartner.youtube.href)
+    scrubbedPartner.youtube = scrubbedPartner.youtube.href;
+  if (scrubbedPartner.instagram && scrubbedPartner.instagram.href)
+    scrubbedPartner.instagram = scrubbedPartner.instagram.href;
+  if (scrubbedPartner.twitter && scrubbedPartner.twitter.href)
+    scrubbedPartner.twitter = scrubbedPartner.twitter.href;
+  if (scrubbedPartner.facebook && scrubbedPartner.facebook.href)
+    scrubbedPartner.facebook = scrubbedPartner.facebook.href;
+  if (scrubbedPartner.twitch && scrubbedPartner.twitch.href)
+    scrubbedPartner.twitch = scrubbedPartner.twitch.href;
+  if (scrubbedPartner.chat && scrubbedPartner.chat.href)
+    scrubbedPartner.chat = scrubbedPartner.chat.href;
+  if (scrubbedPartner.blog && scrubbedPartner.blog.href)
+    scrubbedPartner.blog = scrubbedPartner.blog.href;
+  if (scrubbedPartner.vlog && scrubbedPartner.vlog.href)
+    scrubbedPartner.vlog = scrubbedPartner.vlog.href;
 
   return scrubbedPartner;
 }
@@ -38,18 +65,20 @@ const partner = dbInstance => {
       isNew: true,
       user,
     });
-    if (scrubbedPartner.slug && !isSlugTaken(scrubbedPartner.slug))
+    const newSlug = scrubbedPartner.slug;
+    const slugInUse = await isSlugTaken(newSlug);
+    if (newSlug && slugInUse)
       throw new Error('Slug in use, cannot be used to create a new partner');
 
-    const partnerDocRef = partnerCollection.doc();
+    const partnerDocRef = partnerCollection.doc(); // creates random id
+    dlog('new partner id %s', partnerDocRef.id);
     const slugDoc = slugStore(dbInstance).makeSlugDoc({
-      slugName: scrubbedPartner.slug,
+      slugName: newSlug,
       type: 'partner',
       referenceId: partnerDocRef,
     });
-    const slugDocRef = slugStore(dbInstance).getSlugDocRef(
-      scrubbedPartner.slug,
-    );
+    slugDoc.createdAt = scrubbedPartner.createdAt;
+    const slugDocRef = slugStore(dbInstance).getSlugDocRef(newSlug);
 
     const writeBatch = dbInstance.batch();
     writeBatch.create(partnerDocRef, scrubbedPartner);
@@ -74,21 +103,10 @@ const partner = dbInstance => {
     dlog('writeResult %o', writeResult);
     const out = {
       id: partnerDocRef.id,
-      ...scrubPartner,
-    };
-
-    return partnerDateForge(out);
-  }
-
-  async function createLocal(newPartner) {
-    const scrubbedPartner = newPartner;
-
-    const newDocument = await partnerCollection.add(scrubbedPartner);
-
-    return {
-      id: newDocument.id,
       ...scrubbedPartner,
     };
+    dlog('our output is: %o', out);
+    return partnerDateForge(out);
   }
 
   async function get(id) {
@@ -114,6 +132,18 @@ const partner = dbInstance => {
     return Promise.all(ids.map(id => get(id)));
   }
 
+  async function getAll() {
+    const { docs } = await partnerCollection.get();
+
+    return docs.map(d => {
+      const result = {
+        id: d.id,
+        ...d.data(),
+      };
+      return partnerDateForge(result);
+    });
+  }
+
   async function findBySlug(slug) {
     dlog('findBySlug %s', slug);
 
@@ -135,18 +165,6 @@ const partner = dbInstance => {
     }
 
     return result;
-  }
-
-  async function getAll() {
-    const { docs } = await partnerCollection.get();
-
-    return docs.map(d => {
-      const result = {
-        id: d.id,
-        ...d.data(),
-      };
-      return partnerDateForge(result);
-    });
   }
 
   // https://googleapis.dev/nodejs/firestore/latest/DocumentReference.html#update
@@ -196,12 +214,13 @@ const partner = dbInstance => {
   }
 
   return {
+    isSlugTaken,
     create,
-    get,
-    findBySlug,
-    getAll,
-    getBatch,
     update,
+    getBatch,
+    getAll,
+    findBySlug,
+    get,
     findIdFromSlug,
     getSlug,
   };
