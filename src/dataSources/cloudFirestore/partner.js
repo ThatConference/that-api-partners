@@ -67,7 +67,7 @@ const partner = dbInstance => {
     });
     const newSlug = scrubbedPartner.slug;
     const slugInUse = await isSlugTaken(newSlug);
-    if (newSlug && slugInUse)
+    if (slugInUse)
       throw new Error('Slug in use, cannot be used to create a new partner');
 
     const partnerDocRef = partnerCollection.doc(); // creates random id
@@ -75,7 +75,7 @@ const partner = dbInstance => {
     const slugDoc = slugStore(dbInstance).makeSlugDoc({
       slugName: newSlug,
       type: 'partner',
-      referenceId: partnerDocRef,
+      referenceId: partnerDocRef.id,
     });
     slugDoc.createdAt = scrubbedPartner.createdAt;
     const slugDocRef = slugStore(dbInstance).getSlugDocRef(newSlug);
@@ -105,7 +105,7 @@ const partner = dbInstance => {
       id: partnerDocRef.id,
       ...scrubbedPartner,
     };
-    dlog('our output is: %o', out);
+
     return partnerDateForge(out);
   }
 
@@ -222,11 +222,10 @@ const partner = dbInstance => {
     const docSnapshot = await partnerDocRef.get();
     if (!docSnapshot.exists)
       throw new Error(
-        'invalid partnerId provided, unable to change partnew slug',
+        'invalid partnerId provided, unable to change partner slug',
       );
     const scrubbedPartner = scrubPartner({
       partner: {
-        id: partnerDocRef.id,
         slug: newSlug,
       },
       user,
