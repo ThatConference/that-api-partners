@@ -1,0 +1,3 @@
+extend type Asset @key(fields: "id") {
+  id: ID! @external
+}
