@@ -8,6 +8,8 @@ import sessionsStore from '../../../dataSources/cloudFirestore/sessions';
 const dlog = debug('that:api:partners:query:partner');
 const favoriteStore = dataSources.cloudFirestore.favorites;
 const favoriteType = 'partner';
+const assetStore = dataSources.cloudFirestore.assets;
+const entityType = 'PARTNER';
 
 export const refResolvers = {
   Partner: {
@@ -85,6 +87,14 @@ export const refResolvers = {
       if (lastUpdatedBy) result = { id: lastUpdatedBy };
 
       return result;
+    },
+
+    assets: ({ id: entityId }, __, { dataSources: { firestore } }) => {
+      dlog('partner assets request');
+      return assetStore(firestore).findEntityAssets({
+        entityId,
+        entityType,
+      });
     },
   },
 };
