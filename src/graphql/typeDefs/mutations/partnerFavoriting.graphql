@@ -1,4 +1,4 @@
 type PartnerFavoritingMutation {
   "Toggles a favorite/follow setting on a partner by the logged in member"
-  toggle: Partner
+  toggle: Partner @auth(requires: "members")
 }
