@@ -8,7 +8,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { middleware } from '@thatconference/api';
 
 import apolloGraphServer from './graphql';
-// import { version } from '../package.json';
 
 let version;
 (async () => {
@@ -79,21 +78,37 @@ function createUserContext(req, res, next) {
     return !!mocks.includes('PARTNERS');
   };
 
-  const correlationId = req.headers['that-correlation-id']
-    ? req.headers['that-correlation-id']
-    : uuidv4();
+  const correlationId =
+    req.headers['that-correlation-id'] &&
+    req.headers['that-correlation-id'] !== 'undefined'
+      ? req.headers['that-correlation-id']
+      : uuidv4();
 
   Sentry.configureScope(scope => {
     scope.setTag('correlationId', correlationId);
   });
 
+  let site;
+  if (req.headers['that-site']) {
+    site = req.headers['that-site'];
+  } else if (req.headers['x-forwarded-for']) {
+    // eslint-disable-next-line no-useless-escape
+    const rxHost = /^https?\:\/\/([^\/?#]+)(?:[\/?#]|$)/i;
+    const refererHost = req.headers['x-forwarded-for'];
+    const host = refererHost.match(rxHost);
+    if (host) [, site] = host;
+  } else {
+    site = 'www.thatconference.com';
+  }
+
   req.userContext = {
     locale: req.headers.locale,
     authToken: req.headers.authorization,
     correlationId,
-    sentry: Sentry,
+    // sentry: Sentry,
     enableMocking: enableMocking(),
-    firestore: new Firestore(),
+    // firestore: new Firestore(),
+    site,
   };
 
   next();
