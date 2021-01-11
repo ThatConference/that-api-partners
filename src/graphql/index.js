@@ -1,17 +1,13 @@
-import {
-  ApolloServer,
-  gql,
-  addMockFunctionsToSchema,
-  SchemaDirectiveVisitor,
-} from 'apollo-server-express';
+import { ApolloServer, SchemaDirectiveVisitor } from 'apollo-server-express';
 import { buildFederatedSchema } from '@apollo/federation';
 import debug from 'debug';
+import * as Sentry from '@sentry/node';
 import { security, graph } from '@thatconference/api';
-import _ from 'lodash';
+import { isNil } from 'lodash';
 import DataLoader from 'dataloader';
 
 // Graph Types and Resolvers
-import typeDefsRaw from './typeDefs';
+import typeDefs from './typeDefs';
 import resolvers from './resolvers';
 import directives from './directives';
 import partnerStore from '../dataSources/cloudFirestore/partner';
@@ -19,11 +15,6 @@ import partnerStore from '../dataSources/cloudFirestore/partner';
 const dlog = debug('that:api:partners:graphServer');
 const jwtClient = security.jwt();
 const { lifecycle } = graph.events;
-
-// convert our raw schema to gql
-const typeDefs = gql`
-  ${typeDefsRaw}
-`;
 
 /**
  * will create you a configured instance of an apollo gateway
@@ -34,21 +25,8 @@ const typeDefs = gql`
  *
  *     createGateway(userContext)
  */
-const createServer = ({ dataSources }, enableMocking = false) => {
-  let schema = {};
-
-  if (!enableMocking) {
-    schema = buildFederatedSchema([{ typeDefs, resolvers }]);
-  } else {
-    schema = buildFederatedSchema([{ typeDefs }]);
-
-    addMockFunctionsToSchema({
-      schema,
-      // eslint-disable-next-line global-require
-      mocks: require('./__mocks__').default(),
-      preserveResolvers: true, // so GetServiceDefinition works
-    });
-  }
+const createServer = ({ dataSources }) => {
+  const schema = buildFederatedSchema([{ typeDefs, resolvers }]);
   SchemaDirectiveVisitor.visitSchemaDirectives(schema, directives);
 
   return new ApolloServer({
@@ -64,7 +42,22 @@ const createServer = ({ dataSources }, enableMocking = false) => {
       const partnerLoader = new DataLoader(ids =>
         partnerStore(firestore)
           .getBatch(ids)
-          .then(partners => ids.map(i => partners.find(p => p.id === i))),
+          .then(partners => {
+            if (partners.includes(null)) {
+              Sentry.withScope(scope => {
+                scope.setLevel('error');
+                scope.setContext(
+                  `partner loader partner(s) don't exist in partners collection`,
+                  { ids },
+                  { partners },
+                );
+                Sentry.captureMessage(
+                  `partner loader partner(s) don't exist in partners collection`,
+                );
+              });
+            }
+            return ids.map(i => partners.find(p => p && p.id === i));
+          }),
       );
 
       return {
@@ -77,12 +70,24 @@ const createServer = ({ dataSources }, enableMocking = false) => {
       dlog('building graphql user context');
       let context = {};
 
-      if (!_.isNil(req.headers.authorization)) {
+      if (!isNil(req.headers.authorization)) {
         dlog('validating token for %o:', req.headers.authorization);
+        Sentry.addBreadcrumb({
+          category: 'graphql context',
+          message: 'user has authToken',
+          level: Sentry.Severity.Info,
+        });
 
         const validatedToken = await jwtClient.verify(
           req.headers.authorization,
         );
+
+        Sentry.configureScope(scope => {
+          scope.setUser({
+            id: validatedToken.sub,
+            permissions: validatedToken.permissions.toString(),
+          });
+        });
 
         dlog('validated token: %o', validatedToken);
         context = {
@@ -114,7 +119,15 @@ const createServer = ({ dataSources }, enableMocking = false) => {
     ],
 
     formatError: err => {
-      dataSources.sentry.captureException(err);
+      dlog('formatError %O', err);
+
+      Sentry.withScope(scope => {
+        scope.setTag('formatError', true);
+        scope.setLevel('warning');
+        scope.setExtra('originalError', err.originalError);
+        scope.setExtra('path', err.path);
+        Sentry.captureException(err);
+      });
 
       return err;
     },
