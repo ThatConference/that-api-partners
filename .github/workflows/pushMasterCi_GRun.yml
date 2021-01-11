@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build partners
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -37,10 +37,11 @@ jobs:
           name: tc-api
           path: __build__
       - name: Slack Notification
-        uses: 8398a7/action-slack@v2
+        uses: 8398a7/action-slack@v3
         with:
+          fields: repo,message,commit,author,eventName,ref,workflow,job,took
           status: ${{ job.status }}
-          author: Push Master CI
+          author_name: Push Master CI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
@@ -57,10 +58,11 @@ jobs:
           name: tc-api
           path: __build__
       - name: Setup gcloud Actions
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@master
         with:
           version: '305.0.0'
           service_account_key: ${{ secrets.GCLOUD_AUTH }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
       - name: gcloud docker cred helper
         run: gcloud auth configure-docker
         env:
@@ -76,16 +78,17 @@ jobs:
           gcloud secrets versions access latest --secret any-secrets2array-util_file > secrets2array.sh && chmod +x secrets2array.sh
           GCR_ENV_VARS=$(gcloud secrets versions access latest --secret prod-api-non_gateway-env | ./secrets2array.sh)
           C_CNT=$(cat __build__/ccnt.txt)
-          SENTRYREL=SENTRY_VERSION=that-api-members@$(cat __build__/package.json | jq '.version' | tr -d '"')-$C_CNT.$(echo $GITHUB_SHA | cut -c1-7)
+          SENTRYREL=SENTRY_VERSION=that-api-partners@$(cat __build__/package.json | jq '.version' | tr -d '"')-$C_CNT.$(echo $GITHUB_SHA | cut -c1-7)
           GCR_ENV_VARS="${GCR_ENV_VARS}, ${SENTRYREL}"
           gcloud run deploy partners --image us.gcr.io/${{ secrets.GCP_PROJECT_ID }}/partners --region=us-central1 --platform=managed --allow-unauthenticated --set-env-vars="$GCR_ENV_VARS" --timeout=300 --memory=256Mi --cpu=1
         env:
           CLOUDSDK_CORE_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
       - name: Slack Notification
-        uses: 8398a7/action-slack@v2
+        uses: 8398a7/action-slack@v3
         with:
+          fields: repo,message,commit,author,eventName,ref,workflow,job,took
           status: ${{ job.status }}
-          author: Push Master CI
+          author_name: Push Master CI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
@@ -102,10 +105,11 @@ jobs:
           echo result $REFRESH_RESULT
           if [ $REFRESH_RESULT != '"reloaded"' ]; then exit 99; fi
       - name: Slack Notification
-        uses: 8398a7/action-slack@v2
+        uses: 8398a7/action-slack@v3
         with:
+          fields: repo,message,commit,author,eventName,ref,workflow
           status: ${{ job.status }}
-          author: Push Master CI
+          author_name: Push Master CI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}

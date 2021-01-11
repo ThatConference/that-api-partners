@@ -5,7 +5,6 @@ import { Firestore } from '@google-cloud/firestore';
 import responseTime from 'response-time';
 import * as Sentry from '@sentry/node';
 import { v4 as uuidv4 } from 'uuid';
-import { middleware } from '@thatconference/api';
 
 import apolloGraphServer from './graphql';
 
@@ -21,10 +20,9 @@ let version;
 })();
 
 const dlog = debug('that:api:partners:index');
-const defaultVersion = `that-api-gateway@${version}`;
+const defaultVersion = `that-api-partners@${version}`;
 const firestore = new Firestore();
 const api = connect();
-const { requestLogger } = middleware;
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -67,17 +65,6 @@ const useSentry = async (req, res, next) => {
  *
  */
 function createUserContext(req, res, next) {
-  const enableMocking = () => {
-    if (!req.headers['that-enable-mocks']) return false;
-
-    dlog('mocking enabled');
-
-    const headerValues = req.headers['that-enable-mocks'].split(',');
-    const mocks = headerValues.map(i => i.trim().toUpperCase());
-
-    return !!mocks.includes('PARTNERS');
-  };
-
   const correlationId =
     req.headers['that-correlation-id'] &&
     req.headers['that-correlation-id'] !== 'undefined'
@@ -105,9 +92,7 @@ function createUserContext(req, res, next) {
     locale: req.headers.locale,
     authToken: req.headers.authorization,
     correlationId,
-    // sentry: Sentry,
-    enableMocking: enableMocking(),
-    // firestore: new Firestore(),
+    enableMocking: false,
     site,
   };
 
@@ -126,7 +111,6 @@ function failure(err, req, res, next) {
 
 api
   .use(responseTime())
-  .use(requestLogger('that:api:partners').handler)
   .use(useSentry)
   .use(createUserContext)
   .use(failure);
