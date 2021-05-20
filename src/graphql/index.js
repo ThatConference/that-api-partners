@@ -2,7 +2,7 @@ import { ApolloServer, SchemaDirectiveVisitor } from 'apollo-server-express';
 import { buildFederatedSchema } from '@apollo/federation';
 import debug from 'debug';
 import * as Sentry from '@sentry/node';
-import { security, graph } from '@thatconference/api';
+import { security } from '@thatconference/api';
 import { isNil } from 'lodash';
 import DataLoader from 'dataloader';
 
@@ -14,7 +14,6 @@ import partnerStore from '../dataSources/cloudFirestore/partner';
 
 const dlog = debug('that:api:partners:graphServer');
 const jwtClient = security.jwt();
-const { lifecycle } = graph.events;
 
 /**
  * will create you a configured instance of an apollo gateway
@@ -103,20 +102,7 @@ const createServer = ({ dataSources }) => {
       return context;
     },
 
-    plugins: [
-      {
-        requestDidStart(req) {
-          return {
-            executionDidStart(requestContext) {
-              lifecycle.emit('executionDidStart', {
-                service: 'that:api:partners',
-                requestContext,
-              });
-            },
-          };
-        },
-      },
-    ],
+    plugins: [],
 
     formatError: err => {
       dlog('formatError %O', err);
