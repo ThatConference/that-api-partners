@@ -3,7 +3,7 @@ import debug from 'debug';
 import partnerStore from '../../../dataSources/cloudFirestore/partner';
 import partnerFindBy from '../../../lib/partnerFindBy';
 
-const dlog = debug('that:api:partners:query:PartnersQuery');
+const dlog = debug('that:api:partners:query:partners');
 
 export const fieldResolvers = {
   PartnersQuery: {
@@ -21,6 +21,11 @@ export const fieldResolvers = {
 
     me: () => {
       dlog('me called');
+      return {};
+    },
+
+    us: () => {
+      dlog('us called');
       return {};
     },
   },
