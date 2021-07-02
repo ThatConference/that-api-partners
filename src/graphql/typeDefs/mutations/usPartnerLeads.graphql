@@ -1,5 +1,4 @@
 type UsPartnerLeadsMutation {
   "Add a new lead"
-  #add(pin: String!, eventId: ID!, partnerNotes: String): NewLeadResult
   add(lead: PartnerLeadCreateInput): NewLeadResult!
 }
