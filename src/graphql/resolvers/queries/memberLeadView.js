@@ -1,6 +1,7 @@
 export const fieldResolvers = {
   MemberLeadView: {
-    partner: ({ partnerId: id }) => ({ id }),
+    partner: ({ partnerId }, __, { dataSources: { partnerLoader } }) =>
+      partnerLoader.load(partnerId),
     event: ({ eventId: id }) => ({ id }),
     member: ({ memberId: id }) => ({ id }),
     partnerContact: ({ partnerContactId: id }) => ({ id }),

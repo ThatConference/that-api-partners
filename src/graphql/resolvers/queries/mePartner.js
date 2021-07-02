@@ -10,6 +10,7 @@ export const fieldResolvers = {
     },
     leads: () => {
       dlog('leads called');
+      return {};
     },
   },
 };

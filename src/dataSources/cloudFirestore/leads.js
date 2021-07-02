@@ -78,7 +78,24 @@ const lead = dbInstance => {
       );
   }
 
-  return { get, create, findByPartner };
+  function findByMember(memberId) {
+    dlog('findByMember %s', memberId);
+
+    return leadCollection
+      .where('memberId', '==', memberId)
+      .get()
+      .then(querySnap =>
+        querySnap.docs.map(leads => {
+          const r = {
+            id: leads.id,
+            ...leads.data(),
+          };
+          return leadDateForge(r);
+        }),
+      );
+  }
+
+  return { get, create, findByPartner, findByMember };
 };
 
 export default lead;
