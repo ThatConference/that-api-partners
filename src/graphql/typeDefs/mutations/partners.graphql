@@ -8,4 +8,6 @@ type PartnersMutation {
     @auth(requires: "members")
   "Partner mutation for a partner by a partner"
   us(findBy: FindPartnerInput!): UsPartnerMutation @auth(requires: "partners")
+  "Partner mutation for a partner by a member"
+  me(findBy: FindPartnerInput!): MePartnerMutation @auth(requires: "members")
 }

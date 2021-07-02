@@ -29,9 +29,7 @@ export const fieldResolvers = {
     },
 
     us: async (_, { findBy }, { dataSources: { firestore }, user }) => {
-      dlog('us called');
-      // return partnerFindBy(findBy, firestore);
-      dlog('us called');
+      dlog('us called %o', findBy);
       const { partnerId, slug } = await partnerFindBy(findBy, firestore);
       if (!partnerId) throw new Error('partner reference not found');
       const is = await isPartnerMember({
@@ -41,6 +39,11 @@ export const fieldResolvers = {
       });
       if (!is) return {};
       return { partnerId, slug };
+    },
+
+    me: (_, { findBy }, { dataSources: { firestore } }) => {
+      dlog('me called %o', findBy);
+      return partnerFindBy(findBy, firestore);
     },
   },
 };

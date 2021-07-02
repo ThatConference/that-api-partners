@@ -9,6 +9,8 @@ import { fieldResolvers as memberFields } from './member';
 import { fieldResolvers as favoritingFields } from './favoriting';
 import { fieldResolvers as usPartnerFields } from './usPartner';
 import { fieldResolvers as usPartnerLeadsFields } from './usPartnerLeads';
+import { fieldResolvers as mePartnerFields } from './mePartner';
+import { fieldResolvers as mePartnerLeadsFields } from './mePartnerLeads';
 
 export default {
   ...rootMutations,
@@ -24,4 +26,6 @@ export const fieldResolvers = {
   ...favoritingFields,
   ...usPartnerFields,
   ...usPartnerLeadsFields,
+  ...mePartnerFields,
+  ...mePartnerLeadsFields,
 };

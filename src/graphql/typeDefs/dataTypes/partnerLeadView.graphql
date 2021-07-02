@@ -10,8 +10,8 @@ type PartnerLeadView {
   member: SharedProfile!
   "Partner contact associated with this lead"
   partnerContact: PublicProfile
-  "PIN Entered for generating lead"
-  partnerPin: String!
+  "PIN Entered when partner generating lead"
+  partnerPin: String
   "Notes made about member by partner"
   partnersNotes: String
   "Lead created by"

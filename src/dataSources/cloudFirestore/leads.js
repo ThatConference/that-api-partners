@@ -1,5 +1,4 @@
 import debug from 'debug';
-import * as Sentry from '@sentry/node';
 import { utility } from '@thatconference/api';
 
 const dlog = debug('that:api:partners:datasources:firebase:lead');

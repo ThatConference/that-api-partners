@@ -1,8 +1,10 @@
 import debug from 'debug';
+import { dataSources } from '@thatconference/api';
 import orderStore from '../../../dataSources/cloudFirestore/orders';
 import leadStore from '../../../dataSources/cloudFirestore/leads';
 
-const dlog = debug('that:api:partners:mutations:leads');
+const eventStore = dataSources.cloudFirestore.event;
+const dlog = debug('that:api:partners:mutations:us:leads');
 
 export const fieldResolvers = {
   UsPartnerLeadsMutation: {
@@ -11,16 +13,20 @@ export const fieldResolvers = {
       { lead: leadInput },
       { dataSources: { firestore }, user },
     ) => {
-      const { partnerPin, eventId, partnerNotes = null } = leadInput;
+      const { partnerPin, eventId, partnersNotes = null } = leadInput;
       dlog('add lead %s on partner %s', partnerPin, slug);
       const result = {
         result: false,
         message: 'not set',
       };
-      const [allocation] = await orderStore(firestore).findPin({
-        partnerPin,
-        eventId,
-      });
+      const [[allocation], event] = await Promise.all([
+        orderStore(firestore).findPin({
+          partnerPin,
+          eventId,
+        }),
+        eventStore(firestore).get(eventId),
+      ]);
+      if (!event) throw new Error(`Invalid event provided.`);
       dlog('the allocation: %o', allocation);
       if (!allocation) result.message = `PIN entered not found.`;
       else if (!allocation.allocatedTo)
@@ -37,7 +43,7 @@ export const fieldResolvers = {
         eventId,
         memberId: allocation.allocatedTo,
         partnerContactId: user.sub,
-        partnerNotes,
+        partnersNotes,
         partnerPin,
       };
       const newLead = await leadStore(firestore).create({
