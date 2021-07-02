@@ -7,7 +7,7 @@ type PartnersMutation {
   favoriting(findBy: FindPartnerInput!): PartnerFavoritingMutation
     @auth(requires: "members")
   "Partner mutation for a partner by a partner"
-  us(findBy: FindPartnerInput!): UsPartnerMutation @auth(requires: "partners")
+  us: UsPartnerMutation @auth(requires: "partners")
   "Partner mutation for a partner by a member"
   me(findBy: FindPartnerInput!): MePartnerMutation @auth(requires: "members")
 }
