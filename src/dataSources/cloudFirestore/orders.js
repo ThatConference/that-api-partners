@@ -18,16 +18,18 @@ const order = dbInstance => {
       .where('partnerPin', '==', partnerPin)
       .where('event', '==', eventId)
       .get()
-      .then(querySnap =>
-        querySnap.docs.map(d => {
+      .then(querySnap => {
+        if (querySnap.size > 1)
+          throw new Error(`Multiple allocations found with PIN ${partnerPin}.`);
+        return querySnap.docs.map(d => {
           const r = {
             id: d.id,
             ...d.data(),
           };
 
           return allocationDateForge(r);
-        }),
-      );
+        });
+      });
   }
 
   return { findPin };
