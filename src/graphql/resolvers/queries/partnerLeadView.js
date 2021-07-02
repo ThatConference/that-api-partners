@@ -4,7 +4,7 @@ export const fieldResolvers = {
       partnerLoader.load(partnerId),
     event: ({ eventId: id }) => ({ id }),
     member: ({ memberId: id }) => ({ id }),
-    partnerContact: ({ partnerContactId: id }) => ({ id }),
+    partnerContact: ({ partnerContactId: id }) => (id ? { id } : null),
     createdBy: ({ createdBy: id }) => ({ id }),
     lastUpdatedBy: ({ lastUpdatedBy: id }) => ({ id }),
   },
