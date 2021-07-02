@@ -24,6 +24,28 @@ function members(dbInstance) {
     return results;
   }
 
+  function findMemberAtPartner({ partnerId, memberId }) {
+    dlog('find member, %s, at partner, %s', memberId, partnerId);
+
+    return dbInstance
+      .collection(collectionName)
+      .doc(partnerId)
+      .collection(subCollectionName)
+      .doc(memberId)
+      .get()
+      .then(docRef => {
+        let r = null;
+        if (docRef.exists) {
+          r = {
+            id: docRef.id,
+            ...docRef.data(),
+          };
+        }
+
+        return r;
+      });
+  }
+
   async function add(partnerId, memberId, member) {
     dlog('add');
 
@@ -48,10 +70,19 @@ function members(dbInstance) {
       `${collectionName}/${partnerId}/${subCollectionName}/${memberId}`,
     );
 
-    return documentRef.update(member).then(res => ({
-      id: memberId,
-      ...member,
-    }));
+    return documentRef.update(member).then(() =>
+      documentRef.get().then(upDocRef => {
+        let r = null;
+        if (upDocRef.exists) {
+          r = {
+            id: upDocRef.id,
+            ...upDocRef.data(),
+          };
+        }
+
+        return r;
+      }),
+    );
   }
 
   function remove(partnerId, memberId) {
@@ -66,7 +97,7 @@ function members(dbInstance) {
     });
   }
 
-  return { add, update, remove, findPartners };
+  return { findPartners, findMemberAtPartner, add, update, remove };
 }
 
 export default members;

@@ -1,0 +1,8 @@
+input LeadCreateInput {
+  "Pin of member to use for lead"
+  partnerPin: String!
+  "Event associated with lead"
+  eventId: ID!
+  "Notes provided by partner about new lead"
+  partnerNotes: String
+}

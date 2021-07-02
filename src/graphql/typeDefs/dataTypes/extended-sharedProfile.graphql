@@ -1,0 +1,3 @@
+extend type SharedProfile @key(fields: "id") {
+  id: ID! @external
+}

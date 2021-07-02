@@ -1,0 +1,3 @@
+type MePartnerLeadsQuery {
+  all: [MemberLeadView]! @auth(requires: "members")
+}

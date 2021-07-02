@@ -1,0 +1,3 @@
+extend type Event @key(fields: "id") {
+  id: ID! @external
+}

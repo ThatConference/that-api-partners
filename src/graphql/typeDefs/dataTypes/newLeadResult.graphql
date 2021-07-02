@@ -1,0 +1,7 @@
+"Return type for new leads being added"
+type NewLeadResult {
+  result: Boolean!
+  message: String!
+  partnerLeadView: PartnerLeadView
+  memberLeadView: MemberLeadView
+}
