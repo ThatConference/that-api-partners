@@ -1,4 +1,6 @@
 type MePartnerQuery {
   "Partner favorite queries for logged in member"
   favorites: MePartnerFavoritesQuery @auth(requires: "members")
+  "Partners who member is on lead list"
+  leads: MePartnerLeadsQuery @auth(requires: "members")
 }

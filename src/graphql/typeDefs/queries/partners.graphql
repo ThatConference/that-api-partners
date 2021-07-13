@@ -5,4 +5,6 @@ type PartnersQuery {
   partner(findBy: FindPartnerInput!): Partner
   "Partner data in scope of logged in member"
   me: MePartnerQuery @auth(requires: "members")
+  "Partner-specific data, leads, etc."
+  us: UsPartnerQuery @auth(requires: "partners")
 }

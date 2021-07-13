@@ -1,0 +1,24 @@
+type MemberLeadView {
+  "Record id"
+  id: ID!
+  "Partner who's lead this is"
+  partner: Partner!
+  "Event this lead was generated at"
+  event: Event!
+  "member who this lead is pointing to"
+  member: SharedProfile!
+  "Partner contact associated with this lead"
+  partnerContact: PublicProfile
+  "PIN Entered when partner generating lead"
+  partnerPin: String
+  "Notes made about partner my member"
+  membersNotes: String
+  "Lead created by"
+  createdBy: SharedProfile!
+  "Lead created date/time"
+  createdAt: Date!
+  "Who last edited the record"
+  lastUpdatedBy: SharedProfile!
+  "When the last edit happened"
+  lastUpdatedAt: Date!
+}

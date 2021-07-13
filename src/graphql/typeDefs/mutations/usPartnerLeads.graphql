@@ -1,0 +1,4 @@
+type UsPartnerLeadsMutation {
+  "Add a new lead"
+  add(lead: PartnerLeadCreateInput): NewLeadResult!
+}

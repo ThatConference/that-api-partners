@@ -1,9 +1,13 @@
 type PartnersMutation {
   "create a new partner"
   create(partner: PartnerCreateInput!): Partner! @auth(requires: "admin")
-  "provides actaions against a specific partner"
+  "provides actions against a specific partner"
   partner(findBy: FindPartnerInput!): PartnerMutation @auth(requires: "admin")
   "favoriting/following mutations for a specific partner"
   favoriting(findBy: FindPartnerInput!): PartnerFavoritingMutation
     @auth(requires: "members")
+  "Partner mutation for a partner by a partner"
+  us: UsPartnerMutation @auth(requires: "partners")
+  "Partner mutation for a partner by a member"
+  me(findBy: FindPartnerInput!): MePartnerMutation @auth(requires: "members")
 }
