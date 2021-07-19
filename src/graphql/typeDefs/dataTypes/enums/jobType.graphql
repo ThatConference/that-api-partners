@@ -1,6 +1,13 @@
 enum JobType {
+  "Full Time"
   FULL_TIME
+
+  "Part Time"
   PART_TIME
+
+  "Contract"
   CONTRACT
+
+  "Contract To Hire"
   CONTRACT_TO_HIRE
 }
