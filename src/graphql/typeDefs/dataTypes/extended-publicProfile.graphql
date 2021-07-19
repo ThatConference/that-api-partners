@@ -6,4 +6,10 @@ extend type PublicProfile @key(fields: "id") {
 
   "this is the order in which people can be featured"
   partnerFeaturedOrder: Int
+
+  "Primary contact for Partner. Default emailTo for CTA"
+  isPrimaryContact: Boolean!
+
+  "is this a person who can be contacted as a representative of this company"
+  isCompanyContact: Boolean
 }

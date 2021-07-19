@@ -46,6 +46,24 @@ function members(dbInstance) {
       });
   }
 
+  function findIsPrimaryContact(partnerId) {
+    dlog('findIsPrimaryContact at partner %s', partnerId);
+
+    const col = dbInstance.collection(
+      `${collectionName}/${partnerId}/${subCollectionName}`,
+    );
+
+    return col
+      .where('isPrimaryContact', '==', true)
+      .get()
+      .then(querySnap =>
+        querySnap.docs.map(m => ({
+          id: m.id,
+          ...m.data(),
+        })),
+      );
+  }
+
   async function add(partnerId, memberId, member) {
     dlog('add');
 
@@ -97,7 +115,14 @@ function members(dbInstance) {
     });
   }
 
-  return { findPartners, findMemberAtPartner, add, update, remove };
+  return {
+    findPartners,
+    findMemberAtPartner,
+    findIsPrimaryContact,
+    add,
+    update,
+    remove,
+  };
 }
 
 export default members;

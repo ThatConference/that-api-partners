@@ -2,11 +2,14 @@ import 'dotenv/config';
 import connect from 'express';
 import debug from 'debug';
 import { Firestore } from '@google-cloud/firestore';
+import { Client as Postmark } from 'postmark';
 import responseTime from 'response-time';
 import * as Sentry from '@sentry/node';
 import { v4 as uuidv4 } from 'uuid';
 
 import apolloGraphServer from './graphql';
+import envConfig from './envConfig';
+import userEventEmitter from './events/user';
 
 let version;
 (async () => {
@@ -19,10 +22,12 @@ let version;
   version = p.version;
 })();
 
-const dlog = debug('that:api:partners:index');
-const defaultVersion = `that-api-partners@${version}`;
 const firestore = new Firestore();
+const dlog = debug('that:api:partners:index');
 const api = connect();
+const defaultVersion = `that-api-partners@${version}`;
+const postmark = new Postmark(envConfig.postmarkApiToken);
+const userEvents = userEventEmitter(postmark);
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -39,6 +44,10 @@ const createConfig = () => ({
   dataSources: {
     sentry: Sentry,
     firestore,
+    postmark,
+    events: {
+      userEvents,
+    },
   },
 });
 
@@ -50,6 +59,7 @@ const useSentry = async (req, res, next) => {
     message: 'partner init',
     level: Sentry.Severity.Info,
   });
+
   next();
 };
 
@@ -73,6 +83,9 @@ function createUserContext(req, res, next) {
 
   Sentry.configureScope(scope => {
     scope.setTag('correlationId', correlationId);
+    scope.setContext('headers', {
+      headers: req.headers,
+    });
   });
 
   let site;
@@ -92,7 +105,6 @@ function createUserContext(req, res, next) {
     locale: req.headers.locale,
     authToken: req.headers.authorization,
     correlationId,
-    enableMocking: false,
     site,
   };
 
@@ -106,7 +118,7 @@ function failure(err, req, res, next) {
   res
     .set('Content-Type', 'application/json')
     .status(500)
-    .json(err);
+    .json(err.message);
 }
 
 api

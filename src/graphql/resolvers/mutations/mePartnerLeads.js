@@ -10,7 +10,13 @@ export const fieldResolvers = {
     add: async (
       { partnerId, slug },
       { lead: leadInput },
-      { dataSources: { firestore }, user },
+      {
+        dataSources: {
+          firestore,
+          events: { userEvents },
+        },
+        user,
+      },
     ) => {
       dlog('add called on partner %s, by member %s', slug, user.sub);
       const { eventId, membersNotes = null } = leadInput;
@@ -34,6 +40,11 @@ export const fieldResolvers = {
       });
 
       result.memberLeadView = newLead;
+      userEvents.emit('memberGenLeadCreated', {
+        event,
+        lead,
+        firestore,
+      });
 
       return result;
     },

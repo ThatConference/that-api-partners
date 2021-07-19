@@ -6,8 +6,14 @@ type Partner @key(fields: "id") {
   slug: Slug!
   heroImage: URL
 
+  "Who is the partner, about us"
   aboutUs: String
+  "Company goals"
   goals: [String]
+  "Partner call to action at THAT Conference"
+  callToAction: String
+  "Partner call to action URL"
+  callToActionUrl: URL
 
   addressLineOne: String
   addressLineTwo: String

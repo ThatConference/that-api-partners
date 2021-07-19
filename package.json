@@ -1,6 +1,6 @@
 {
   "name": "that-api-partners",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "that's partners api",
   "main": "index.js",
   "engines": {
@@ -25,7 +25,7 @@
     "@graphql-tools/load-files": "6.2.7",
     "@graphql-tools/merge": "6.2.10",
     "@sentry/node": "^6.8.0",
-    "@thatconference/api": "~1.24.0",
+    "@thatconference/api": "~1.24.1",
     "apollo-server-express": "^2.22.2",
     "dataloader": "^2.0.0",
     "debug": "^4.3.1",
@@ -36,6 +36,7 @@
     "graphql-type-json": "^0.3.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
+    "postmark": "^2.7.6",
     "response-time": "^2.3.2",
     "slugify": "^1.5.3",
     "uuid": "^8.3.2"
