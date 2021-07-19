@@ -1,9 +1,22 @@
 enum ExperienceLevel {
+  "Student"
   STUDENT
+
+  "Junior"
   JUNIOR
+
+  "Mid Level"
   MID_LEVEL
+
+  "Senior"
   SENIOR
+
+  "Team Lead"
   TEAM_LEAD
+
+  "Manager"
   MANAGER
+
+  "Director"
   DIRECTOR
 }
