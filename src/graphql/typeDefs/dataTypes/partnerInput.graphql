@@ -5,8 +5,14 @@ input PartnerCreateInput {
   slug: Slug!
 
   heroImage: URL
+  "Who is the partner, about us"
   aboutUs: String
+  "Company goals"
   goals: [String]
+  "Partner call to action at THAT Conference"
+  callToAction: String
+  "Partner call to action URL"
+  callToActionUrl: URL
 
   addressLineOne: String
   addressLineTwo: String
@@ -33,11 +39,17 @@ input PartnerUpdateInput {
   companyName: String
   companyLogo: URL
   website: URL
-  goals: [String]
-
   slug: Slug
+
   heroImage: URL
+  "Who is the partner, about us"
   aboutUs: String
+  "Company goals"
+  goals: [String]
+  "Partner call to action at THAT Conference"
+  callToAction: String
+  "Partner call to action URL"
+  callToActionUrl: URL
 
   addressLineOne: String
   addressLineTwo: String
