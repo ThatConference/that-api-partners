@@ -8,7 +8,7 @@ extend type PublicProfile @key(fields: "id") {
   partnerFeaturedOrder: Int
 
   "Primary contact for Partner. Default emailTo for CTA"
-  isPrimaryContact: Boolean!
+  isPrimaryContact: Boolean
 
   "is this a person who can be contacted as a representative of this company"
   isCompanyContact: Boolean
