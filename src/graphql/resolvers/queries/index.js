@@ -9,6 +9,9 @@ import { fieldResolvers as usPartnerFields } from './usPartner';
 import { fieldResolvers as usPartnerLeadsFields } from './usPartnerLeads';
 import { fieldResolvers as partnerLeadViewFields } from './partnerLeadView';
 import { fieldResolvers as memberLeadViewFields } from './memberLeadView';
+import { fieldResolvers as publicProfileFields } from './extended-publicProfile';
+import { fieldResolvers as profileFields } from './extended-profile';
+import { fieldResolvers as acceptedSessionFields } from './extended-acceptedSession';
 
 export default {
   ...root,
@@ -24,4 +27,7 @@ export const fieldResolvers = {
   ...usPartnerLeadsFields,
   ...partnerLeadViewFields,
   ...memberLeadViewFields,
+  ...publicProfileFields,
+  ...profileFields,
+  ...acceptedSessionFields,
 };

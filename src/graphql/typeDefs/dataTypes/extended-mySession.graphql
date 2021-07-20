@@ -1,5 +1,0 @@
-extend type MySession @key(fields: "id") {
-  id: ID! @external
-
-  isSponsored: Boolean
-}
