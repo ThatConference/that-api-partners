@@ -2,19 +2,19 @@ extend type Profile @key(fields: "id") {
   id: ID! @external
 
   "is this person a sponsored speaker"
-  isSponsoredSpeaker: Boolean
+  isSponsoredSpeaker: Boolean!
 
   "is this a person who partners with a THAT representative"
-  isPartnershipContact: Boolean
+  isPartnershipContact: Boolean!
 
   "is this a person who can be contacted as a representative of this company"
-  isCompanyContact: Boolean
+  isCompanyContact: Boolean!
 
   "Primary contact for Partner. Default emailTo for CTA"
-  isPrimaryContact: Boolean
+  isPrimaryContact: Boolean!
 
   "is this person listed on the partnership landing page"
-  isSponsoredFeatured: Boolean
+  isSponsoredFeatured: Boolean!
 
   "this is the order in which people can be featured"
   partnerFeaturedOrder: Int
