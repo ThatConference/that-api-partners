@@ -11,7 +11,7 @@ extend type Profile @key(fields: "id") {
   isCompanyContact: Boolean
 
   "Primary contact for Partner. Default emailTo for CTA"
-  isPrimaryContact: Boolean!
+  isPrimaryContact: Boolean
 
   "is this person listed on the partnership landing page"
   isSponsoredFeatured: Boolean
