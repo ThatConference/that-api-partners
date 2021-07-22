@@ -5,6 +5,7 @@ import { dataSources } from '@thatconference/api';
 import { SendEmailError } from '../lib/errors';
 import partnerStore from '../dataSources/cloudFirestore/partner';
 import partnerMemberStore from '../dataSources/cloudFirestore/members';
+import sharedProfileStore from '../dataSources/cloudFirestore/sharedProfile';
 import envConfig from '../envConfig';
 
 const dlog = debug('that:api:partners:events:user');
@@ -25,10 +26,10 @@ function userEvents(postmark) {
     let partnerContact = null;
     const pmFuncs = [
       partnerStore(firestore).get(lead.partnerId),
-      memberStore(firestore).get(lead.memberId),
+      sharedProfileStore(firestore).get(lead.memberId),
     ];
     if (lead.partnerContactId)
-      pmFuncs.push(memberStore(firestore).get(lead.partnerContactId));
+      pmFuncs.push(sharedProfileStore(firestore).get(lead.partnerContactId));
     else pmFuncs.push(false);
     try {
       [partner, memberLead, partnerContact] = await Promise.all(pmFuncs);
@@ -37,6 +38,23 @@ function userEvents(postmark) {
         userEventEmitter.emit('eventEmitterUserError', err),
       );
     }
+
+    // THAT Profile functions
+    const tpFuncs = [];
+    if (!memberLead || (!partnerContact && partnerContact !== false)) {
+      if (memberLead) tpFuncs.push(memberLead);
+      else tpFuncs.push(memberStore(firestore).get(lead.memberId));
+      if (partnerContact) tpFuncs.push(partnerContact);
+      else tpFuncs.push(memberStore(firestore).get(lead.partnerContactId));
+      try {
+        [memberLead, partnerContact] = await Promise.all(tpFuncs);
+      } catch (err) {
+        return process.nextTick(() =>
+          userEventEmitter.emit('eventEmitterUserError', err),
+        );
+      }
+    }
+
     if (!partner || !memberLead || (partnerContact && !partnerContact.email)) {
       dlog('Failed to retreave partner or member data');
       Sentry.withScope(scope => {
@@ -45,6 +63,7 @@ function userEvents(postmark) {
         scope.setContext('memberLead', memberLead);
         scope.setContext('partnerContact', partnerContact);
         scope.setContext('lead', lead);
+        scope.setTag('message', 'partner-generated-lead');
         Sentry.captureMessage('Failed to retreave partner or member data');
       });
       return undefined;
@@ -85,6 +104,7 @@ function userEvents(postmark) {
         scope.setContext('memberLead', memberLead);
         scope.setContext('partnerContact', partnerContact);
         scope.setContext('lead', lead);
+        scope.setTag('message', 'member-generated-lead');
         Sentry.captureMessage(
           'No partner contact email returned. cannot send email.',
         );
