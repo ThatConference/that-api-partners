@@ -8,7 +8,7 @@ type MemberLeadView {
   "member who this lead is pointing to"
   member: SharedProfile!
   "Partner contact associated with this lead"
-  partnerContact: PublicProfile
+  partnerContact: SharedProfile
   "PIN Entered when partner generating lead"
   partnerPin: String
   "Notes made about partner my member"
