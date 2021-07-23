@@ -1,3 +1,3 @@
 type UsPartnerQuery {
-  leads: UsPartnerLeadsQuery @auth(requires: "partners")
+  leads: UsPartnerLeadsQuery @auth(requires: "members")
 }

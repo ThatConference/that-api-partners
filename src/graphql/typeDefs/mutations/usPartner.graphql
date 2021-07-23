@@ -1,4 +1,4 @@
 type UsPartnerMutation {
   "Lead mutations for focused partner"
-  leads: UsPartnerLeadsMutation @auth(requires: "partners")
+  leads: UsPartnerLeadsMutation @auth(requires: "members")
 }
