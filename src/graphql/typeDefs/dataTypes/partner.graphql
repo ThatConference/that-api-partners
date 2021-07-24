@@ -14,6 +14,8 @@ type Partner @key(fields: "id") {
   callToAction: String
   "Partner call to action URL"
   callToActionUrl: URL
+  "CTA One-liner for Spotlight page"
+  callToActionSpotlight: String
 
   addressLineOne: String
   addressLineTwo: String

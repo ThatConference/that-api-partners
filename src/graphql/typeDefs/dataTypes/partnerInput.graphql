@@ -13,6 +13,8 @@ input PartnerCreateInput {
   callToAction: String
   "Partner call to action URL"
   callToActionUrl: URL
+  "CTA One-liner for Spotlight page"
+  callToActionSpotlight: String
 
   addressLineOne: String
   addressLineTwo: String
@@ -50,6 +52,8 @@ input PartnerUpdateInput {
   callToAction: String
   "Partner call to action URL"
   callToActionUrl: URL
+  "CTA One-liner for Spotlight page"
+  callToActionSpotlight: String
 
   addressLineOne: String
   addressLineTwo: String
