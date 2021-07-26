@@ -133,6 +133,7 @@ function userEvents(postmark) {
           memberName: `${memberLead.firstName} ${memberLead.lastName}`,
         },
       },
+      tag: 'member_gen_lead',
     });
   }
 
@@ -180,6 +181,7 @@ function userEvents(postmark) {
           partnerPin: lead.partnerPin,
         },
       },
+      tag: 'partner_gen_lead',
     });
   }
 
