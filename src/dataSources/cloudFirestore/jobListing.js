@@ -8,6 +8,17 @@ function jobListings(dbInstance) {
   const collectionName = 'partners';
   const subCollectionName = 'jobListings';
 
+  function scrubJob(job) {
+    const scrubbedJob = job;
+    // rewrite urls to hrefs
+    Object.keys(scrubbedJob).forEach(key => {
+      const value = scrubbedJob[key];
+      if (value instanceof URL) scrubbedJob[key] = value.toString();
+    });
+
+    return job;
+  }
+
   async function findAll() {
     dlog('findAll');
     const colSnapshot = dbInstance
@@ -53,6 +64,7 @@ function jobListings(dbInstance) {
   async function add(partnerId, jobListing) {
     dlog('add');
 
+    scrubJob(jobListing);
     const ref = dbInstance
       .doc(`${collectionName}/${partnerId}`)
       .collection(subCollectionName);
@@ -68,6 +80,7 @@ function jobListings(dbInstance) {
   function update(partnerId, jobListingId, jobListing) {
     dlog('update');
 
+    scrubJob(jobListing);
     const documentRef = dbInstance.doc(
       `${collectionName}/${partnerId}/${subCollectionName}/${jobListingId}`,
     );
