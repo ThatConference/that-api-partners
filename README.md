@@ -4,15 +4,16 @@
 
 ## Dependencies
 
-- Node `10.15.0`
+- Node `14+`
 
 ## Setup and Configuration
 
-- Install node.js v10.15.0 - `nodenv install 10.15.0`
+- Install node.js in use: `nodenv install $(cat .node_version)`
+- Load dependencies: `npm i`
 
 setup notes:
 
-- we use nodenv to manage node.js - https://github.com/nodenv/nodenv
+- we use nodenv to manage node.js - [https://github.com/nodenv/nodenv](https://github.com/nodenv/nodenv)
 
 ## .env
 
@@ -27,4 +28,4 @@ The main development starting point is `npm run start:watch`
 
 ## Endpoints
 
-- Endpoint: http://localhost:8001/ or http://localhost:8001/graphql
+- Endpoint: [http://localhost:8002/](http://localhost:8002/) or [http://localhost:8002/graphql](http://localhost:8002/graphql)
