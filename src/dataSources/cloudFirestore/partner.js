@@ -111,6 +111,7 @@ const partner = dbInstance => {
   }
 
   async function getAll() {
+    dlog('getting all partners');
     const { docs } = await partnerCollection.get();
 
     return docs.map(d => {
