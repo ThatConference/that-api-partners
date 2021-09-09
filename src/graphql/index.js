@@ -93,6 +93,7 @@ const createServer = ({ dataSources }) => {
           ...context,
           user: {
             ...validatedToken,
+            authToken: req.userContext.authToken,
             site: req.userContext.site,
             correlationId: req.userContext.correlationId,
           },

@@ -5,13 +5,16 @@
 import { buildFederatedSchema } from '@apollo/federation';
 import typeDefs from '../../typeDefs';
 let resolvers;
+let originalEnv;
 
 describe('validate schema test', () => {
   beforeAll(() => {
-    process.env.INFLUX_TOKEN = 'TEST_INFLUX_TOKEN_VALUE';
-    process.env.INFLUX_ORG_ID = 'TEST_INFLUX_ORG_ID_VALUE';
-    process.env.INFLUX_BUCKET_ID = 'INFLUX_BUCKET_ID';
-    process.env.INFLUX_HOST = 'INFLUX_HOST';
+    originalEnv = process.env;
+    // process.env.INFLUX_TOKEN = 'TEST_INFLUX_TOKEN_VALUE';
+    // process.env.INFLUX_ORG_ID = 'TEST_INFLUX_ORG_ID_VALUE';
+    // process.env.INFLUX_BUCKET_ID = 'INFLUX_BUCKET_ID';
+    // process.env.INFLUX_HOST = 'INFLUX_HOST';
+    process.env.POSTMARK_API_TOKEN = 'TEST_POSTMARK_TOKEN_VALUE';
 
     resolvers = require('../../resolvers');
   });
