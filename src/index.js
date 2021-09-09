@@ -1,5 +1,7 @@
+/* eslint-disable no-console */
+/* eslint-disable import/no-unresolved */
 import 'dotenv/config';
-import connect from 'express';
+import express from 'express';
 import debug from 'debug';
 import { Firestore } from '@google-cloud/firestore';
 import { Client as Postmark } from 'postmark';
@@ -24,7 +26,7 @@ let version;
 
 const firestore = new Firestore();
 const dlog = debug('that:api:partners:index');
-const api = connect();
+const api = express();
 const defaultVersion = `that-api-partners@${version}`;
 const postmark = new Postmark(envConfig.postmarkApiToken);
 const userEvents = userEventEmitter(postmark);
@@ -127,9 +129,16 @@ api
   .use(createUserContext)
   .use(failure);
 
-graphServer.applyMiddleware({ app: api, path: '/' });
-
-// const port = process.env.PORT || 8002;
-// api.listen({ port }, () => dlog(`partners running on port %d`, port));
-
-export const handler = api;
+const port = process.env.PORT || 8002;
+graphServer
+  .start()
+  .then(() => {
+    graphServer.applyMiddleware({ app: api, path: '/' });
+    api.listen({ port }, () =>
+      console.log(`✨ Partners 🤝 is running 🏃‍♂️ on port 🚢 ${port}`),
+    );
+  })
+  .catch(err => {
+    console.log(`graphServer.start() error 💥: ${err.message}`);
+    throw err;
+  });
