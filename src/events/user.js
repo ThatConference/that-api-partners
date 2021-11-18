@@ -186,8 +186,13 @@ function userEvents(postmark) {
   }
 
   userEventEmitter.on('eventEmitterUserError', err => {
+    Sentry.setTag('section', 'userEventEmitter');
+    Sentry.captureException(new SendEmailError(err.message));
+  });
+
+  userEventEmitter.on('error', err => {
+    Sentry.setTag('section', 'userEventEmitter');
     Sentry.captureException(err);
-    throw new SendEmailError(err.message);
   });
 
   userEventEmitter.on('partnerGenLeadCreated', sendPartnerGenLeadEmail);
