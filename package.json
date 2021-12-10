@@ -1,6 +1,6 @@
 {
   "name": "that-api-partners",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "THAT Conference partners service",
   "main": "index.js",
   "engines": {
@@ -22,6 +22,7 @@
   "dependencies": {
     "@apollo/federation": "0.22.0",
     "@google-cloud/firestore": "^4.15.1",
+    "@google-cloud/trace-agent": "^5.1.6",
     "@graphql-tools/load-files": "6.2.7",
     "@graphql-tools/merge": "6.2.10",
     "@sentry/node": "^6.15.0",
