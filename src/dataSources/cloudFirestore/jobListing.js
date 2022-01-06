@@ -1,4 +1,9 @@
 import debug from 'debug';
+import { utility } from '@thatconference/api';
+
+const { entityDateForge, partners: partnerDateForge } =
+  utility.firestoreDateForge;
+const jobDateForge = entityDateForge({ fields: ['datePosted'] });
 
 const dlog = debug('that:api:partners:dataSources:firebase:jobListings');
 
@@ -16,6 +21,8 @@ function jobListings(dbInstance) {
       if (value instanceof URL) scrubbedJob[key] = value.toString();
     });
 
+    if (!scrubbedJob.datePosted) scrubbedJob.datePosted = new Date();
+
     return job;
   }
 
@@ -32,7 +39,7 @@ function jobListings(dbInstance) {
       ...d.data(),
     }));
 
-    return results;
+    return jobDateForge(results);
   }
 
   async function findPartners(partnerId, isFeatured) {
@@ -57,12 +64,32 @@ function jobListings(dbInstance) {
       ...d.data(),
     }));
 
-    return results;
+    return partnerDateForge(results);
   }
 
-  // todo.. need to check why I used set..
+  function get(partnerId, jobListingId) {
+    dlog('get job %s for partner %s', partnerId, jobListingId);
+    const docRef = dbInstance
+      .collection(collectionName)
+      .doc(partnerId)
+      .collection(subCollectionName)
+      .doc(jobListingId);
+
+    return docRef.get().then(docSnap => {
+      let result = null;
+      if (docSnap.exists) {
+        result = {
+          id: docSnap.id,
+          ...docSnap.data(),
+        };
+      }
+
+      return jobDateForge(result);
+    });
+  }
+
   async function add(partnerId, jobListing) {
-    dlog('add');
+    dlog('add job to partner %s', partnerId);
 
     scrubJob(jobListing);
     const ref = dbInstance
@@ -71,10 +98,7 @@ function jobListings(dbInstance) {
 
     const results = await ref.add(jobListing);
 
-    return {
-      id: results.id,
-      ...jobListing,
-    };
+    return get(partnerId, results.id);
   }
 
   function update(partnerId, jobListingId, jobListing) {
@@ -85,10 +109,9 @@ function jobListings(dbInstance) {
       `${collectionName}/${partnerId}/${subCollectionName}/${jobListingId}`,
     );
 
-    return documentRef.update(jobListing).then(res => ({
-      id: jobListingId,
-      ...jobListing,
-    }));
+    return documentRef
+      .update(jobListing)
+      .then(() => get(partnerId, jobListingId));
   }
 
   function remove(partnerId, jobListingId) {
