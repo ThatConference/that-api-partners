@@ -12,4 +12,5 @@ type JobListing @key(fields: "id") {
   remote: Boolean
   role: String
   featured: Boolean
+  datePosted: Date
 }
