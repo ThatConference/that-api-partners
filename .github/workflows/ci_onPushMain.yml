@@ -1,0 +1,51 @@
+name: CI on Push Master
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build Partners API for deploy
+    uses: thatconference/that-gh-actions/.github/workflows/build-validate-api.yml@main
+    with:
+      apiName: partners
+      isForDeploy: true
+      branchName: ${{ github.ref_name }}
+    secrets:
+      SLACK_WEBHOOK_DEV_NOTIFICATIONS: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
+
+  deploy:
+    name: Deploy Partners API to Google Run
+    needs: build
+    uses: thatconference/that-gh-actions/.github/workflows/deploy-api.yml@main
+    with:
+      apiName: partners
+      runMemory: 256Mi
+    secrets:
+      GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      SLACK_WEBHOOK_DEV_NOTIFICATIONS: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
+
+  refresh:
+    name: Send refresh request to Gateway
+    needs: [build,deploy]
+    uses: thatconference/that-gh-actions/.github/workflows/refresh-gateway-schema.yml@main
+    with:
+      apiName: partners
+  
+  notifications:
+    name: Workflow notifications
+    needs: [build,deploy,refresh]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v3
+        with:
+          fields: repo,message,commit,author,eventName,ref,workflow
+          status: ${{ job.status }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
+        if: always()
