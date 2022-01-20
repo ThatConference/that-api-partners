@@ -1,0 +1,15 @@
+name: CI on Pull Request
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    name: Build Partners API
+    uses: thatconference/that-gh-actions/.github/workflows/build-validate-api.yml@main
+    with:
+      apiName: partners
+      isForDeploy: false
+      branchName: ${{ github.ref_name }}
+    secrets:
+      SLACK_WEBHOOK_DEV_NOTIFICATIONS: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
