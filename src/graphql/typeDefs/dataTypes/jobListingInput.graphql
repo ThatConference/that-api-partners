@@ -1,31 +1,53 @@
 input JobListingCreateInput {
-  slug: String
-  title: String
-  description: String
+  "A unique, by partner, slug to assign to the job"
+  slug: Slug!
+  "The job listing's title"
+  title: String!
+  "The full description of the job listing"
+  description: String!
+  "(ENUM) The type of job (fulltime, contract, etc.)"
   jobType: JobType
+  "Is this job and internship?"
   internship: Boolean
+  "What experience level is required"
   experienceLevel: ExperienceLevel
+  "Is relocation assistance offed"
   relocationOffered: Boolean
+  "A link to apply immediately for the job"
   applyNowLink: URL
-
+  "Is the job remote or partially remote"
   remote: Boolean
+  "The roll, e.g. 'Front-end developer'"
   role: String
+  "Feature this job for the partner"
   featured: Boolean
-  datePosted: Date
+  "The date job is posted"
+  datePosted: Date!
 }
 
 input JobListingUpdateInput {
-  slug: String
+  "A unique, by partner, slug to assign to the job"
+  slug: Slug
+  "The job listing's title"
   title: String
+  "The full description of the job listing"
   description: String
+  "(ENUM) The type of job (fulltime, contract, etc.)"
   jobType: JobType
+  "Is this job and internship?"
   internship: Boolean
+  "What experience level is required"
   experienceLevel: ExperienceLevel
+  "Is relocation assistance offed"
   relocationOffered: Boolean
+  "A link to apply immediately for the job"
   applyNowLink: URL
-
+  "Is the job remote or partially remote"
   remote: Boolean
+  "The roll, e.g. 'Front-end developer'"
   role: String
+  "Feature this job for the partner"
   featured: Boolean
+  "The date job is posted"
   datePosted: Date
 }

@@ -12,6 +12,8 @@ import { fieldResolvers as memberLeadViewFields } from './memberLeadView';
 import { fieldResolvers as publicProfileFields } from './extended-publicProfile';
 import { fieldResolvers as profileFields } from './extended-profile';
 import { fieldResolvers as acceptedSessionFields } from './extended-acceptedSession';
+import { fieldResolvers as jobListingQueryFields } from './jobListing';
+import { fieldResolvers as communityFields } from './community';
 
 export default {
   ...root,
@@ -30,4 +32,6 @@ export const fieldResolvers = {
   ...publicProfileFields,
   ...profileFields,
   ...acceptedSessionFields,
+  ...jobListingQueryFields,
+  ...communityFields,
 };

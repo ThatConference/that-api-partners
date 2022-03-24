@@ -1,16 +1,28 @@
 type JobListing @key(fields: "id") {
+  "unique datastore id of job listing"
   id: ID!
-  slug: String
-  title: String
-  description: String
+  "unique, by partner, slug"
+  slug: Slug!
+  title: String!
+  description: String!
+  "(ENUM) type of job, fulltime, contract, etc."
   jobType: JobType
+  "Is this job and internship?"
   internship: Boolean
+  "What experience level is required"
   experienceLevel: ExperienceLevel
+  "Is relocation assistance offed"
   relocationOffered: Boolean
+  "A link to apply immediately for the job"
   applyNowLink: URL
-
+  "Is the job remote or partially remote"
   remote: Boolean
+  "The roll, e.g. 'Front-end developer'"
   role: String
+  "Feature this job for the partner"
   featured: Boolean
-  datePosted: Date
+  "The date job is posted"
+  datePosted: Date!
+  "Reference back to the partner of this posting"
+  partner: Partner!
 }
