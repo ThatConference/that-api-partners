@@ -1,0 +1,6 @@
+extend type Community @key(fields: "id") {
+  id: ID! @external
+  slug: Slug! @external
+
+  jobListings: [JobListing]! @requires(fields: "slug")
+}

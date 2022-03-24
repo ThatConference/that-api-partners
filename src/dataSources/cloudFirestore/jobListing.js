@@ -26,6 +26,7 @@ function jobListings(dbInstance) {
     return job;
   }
 
+  // Deprecated, not used and unable to include partnerId with result
   async function findAll() {
     dlog('findAll');
     const colSnapshot = dbInstance
@@ -61,10 +62,48 @@ function jobListings(dbInstance) {
 
     const results = docs.map(d => ({
       id: d.id,
+      partnerId,
       ...d.data(),
     }));
 
     return partnerDateForge(results);
+  }
+
+  async function findPartnerJobsBatch(partnerIds) {
+    if (!Array.isArray(partnerIds))
+      throw new Error(`findPartnerJobsBatch parameter must be an array`);
+    dlog('get jobs for partners: %o', partnerIds);
+    const getJobFuncs = partnerIds.map(partnerId =>
+      dbInstance
+        .collection(collectionName)
+        .doc(partnerId)
+        .collection(subCollectionName)
+        .get()
+        .then(({ docs }) =>
+          docs.map(d => {
+            const r = {
+              id: d.id,
+              partnerId,
+              ...d.data(),
+            };
+            return jobDateForge(r);
+          }),
+        )
+        .then(j =>
+          j.sort((a, b) => {
+            if (a.datePosted && b.datePosted)
+              return b.datePosted.getTime() - a.datePosted.getTime();
+            return 0;
+          }),
+        ),
+    );
+
+    const jobResults = await Promise.all(getJobFuncs);
+    const jobList = [];
+    jobResults.forEach(j1 => j1.forEach(j2 => jobList.push(j2)));
+    dlog('Job count returned: %d', jobList.length);
+
+    return jobList;
   }
 
   function get(partnerId, jobListingId) {
@@ -80,6 +119,7 @@ function jobListings(dbInstance) {
       if (docSnap.exists) {
         result = {
           id: docSnap.id,
+          partnerId,
           ...docSnap.data(),
         };
       }
@@ -126,11 +166,11 @@ function jobListings(dbInstance) {
     });
   }
 
-  async function findBySlug(id, slug) {
+  async function findBySlug(partnerId, slug) {
     dlog('findBySlug');
 
     const colSnapshot = dbInstance
-      .doc(`${collectionName}/${id}`)
+      .doc(`${collectionName}/${partnerId}`)
       .collection(subCollectionName)
       .where('slug', '==', slug.toLowerCase());
 
@@ -144,6 +184,7 @@ function jobListings(dbInstance) {
 
       result = {
         id: d.id,
+        partnerId,
         ...d.data(),
       };
     } else if (size > 1) {
@@ -153,7 +194,15 @@ function jobListings(dbInstance) {
     return result;
   }
 
-  return { add, update, remove, findAll, findPartners, findBySlug };
+  return {
+    findAll,
+    findPartners,
+    findPartnerJobsBatch,
+    add,
+    update,
+    remove,
+    findBySlug,
+  };
 }
 
 export default jobListings;

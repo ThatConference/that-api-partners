@@ -9,6 +9,8 @@ const requiredConfig = () => ({
     'https://images.that.tech/members/person-placeholder.jpg',
   notificationEmailFrom:
     process.env.NOTIFICATION_EMAIL_FROM || 'hello@thatconference.com',
+  // number of days past event endDate partner considered active
+  activePartnerDays: process.env.ACTIVE_PARTNER_DAYS || 30,
 });
 
 export default requiredConfig();
