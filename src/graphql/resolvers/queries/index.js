@@ -14,6 +14,7 @@ import { fieldResolvers as profileFields } from './extended-profile';
 import { fieldResolvers as acceptedSessionFields } from './extended-acceptedSession';
 import { fieldResolvers as jobListingQueryFields } from './jobListing';
 import { fieldResolvers as communityFields } from './community';
+import { fieldResolvers as partnerAdminFields } from './partnerAdmin';
 
 export default {
   ...root,
@@ -34,4 +35,5 @@ export const fieldResolvers = {
   ...acceptedSessionFields,
   ...jobListingQueryFields,
   ...communityFields,
+  ...partnerAdminFields,
 };

@@ -60,4 +60,6 @@ type Partner @key(fields: "id") {
   lastUpdatedAt: Date
   "member who last updated this record"
   lastUpdatedBy: PublicProfile
+  "Admins only path"
+  admin: PartnerAdminQuery @auth(requires: "admin")
 }

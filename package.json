@@ -1,6 +1,6 @@
 {
   "name": "that-api-partners",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "description": "THAT Conference partners service",
   "main": "index.js",
   "engines": {
