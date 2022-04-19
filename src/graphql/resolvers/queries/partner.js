@@ -96,5 +96,7 @@ export const refResolvers = {
         entityType,
       });
     },
+
+    admin: ({ id: partnerId }) => ({ partnerId }),
   },
 };
