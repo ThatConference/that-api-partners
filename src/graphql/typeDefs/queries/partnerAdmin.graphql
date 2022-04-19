@@ -1,0 +1,5 @@
+type PartnerAdminQuery @key(fields: "partnerId") {
+  partnerId: ID!
+  "Members associated with this partner"
+  members: [Profile]! @auth(requires: "admin")
+}
