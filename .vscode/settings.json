@@ -19,5 +19,6 @@
   "peacock.affectActivityBar": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+  "cSpell.words": ["postbuild", "predeploy"]
 }

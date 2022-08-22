@@ -2,20 +2,19 @@
 /* this test is more about successfully building the schema then the
  * resulting schema from the build.
  */
-import { buildFederatedSchema } from '@apollo/federation';
+import { buildSubgraphSchema } from '@apollo/subgraph';
 import typeDefs from '../../typeDefs';
-let resolvers;
+import directives from '../../directives';
+import { ApolloServer } from 'apollo-server-express';
+
 let originalEnv;
+let resolvers;
 
 describe('validate schema test', () => {
   beforeAll(() => {
     originalEnv = process.env;
-    // process.env.INFLUX_TOKEN = 'TEST_INFLUX_TOKEN_VALUE';
-    // process.env.INFLUX_ORG_ID = 'TEST_INFLUX_ORG_ID_VALUE';
-    // process.env.INFLUX_BUCKET_ID = 'INFLUX_BUCKET_ID';
-    // process.env.INFLUX_HOST = 'INFLUX_HOST';
-    process.env.POSTMARK_API_TOKEN = 'TEST_POSTMARK_TOKEN_VALUE';
-
+    process.env.POSTMARK_API_TOKEN = 'POSTMARK_API_TOKEN';
+    process.env.SLACK_WEBHOOK_URL = 'SLACK_WEBHOOK_URL';
     resolvers = require('../../resolvers');
   });
 
@@ -23,20 +22,26 @@ describe('validate schema test', () => {
     process.env = originalEnv;
   });
 
-  /* Checking directives is not working. Fails on auth:
-   * * ReferenceError: defaultFieldResolver is not defined
-   */
-  // const directives = require('../../directives').default;
-  // import directives from '../../directives';
-
-  let schema = buildFederatedSchema([{ typeDefs, resolvers }]);
-  // SchemaDirectiveVisitor.visitSchemaDirectives(schema, directives);
+  let schema = buildSubgraphSchema([{ typeDefs, resolvers }]);
 
   describe('Validate graphql schema', () => {
-    it('schema has successfully build and is and object', () => {
+    it('schema has successfully built and is and object', () => {
       // TODO: find other ways to validate schema
       expect(typeof schema).toBe('object');
       expect(schema).toBeInstanceOf(Object);
+    });
+    it('will add auth directive successfully', () => {
+      const { authDirectiveTransformer } = directives.auth('auth');
+      schema = authDirectiveTransformer(schema);
+      // TODO: find other ways to validate schema
+      expect(typeof schema).toBe('object');
+      expect(schema).toBeInstanceOf(Object);
+    });
+    it('will run in server correctly', () => {
+      const serv = new ApolloServer({ schema });
+      expect(typeof serv).toBe('object');
+      expect(serv?.graphqlPath).toBe('/graphql');
+      expect(serv?.requestOptions?.nodeEnv).toBe('test');
     });
   });
 });

@@ -11,5 +11,6 @@ jobs:
       apiName: partners
       isForDeploy: false
       branchName: ${{ github.ref_name }}
+      nodeVersion: 16
     secrets:
       SLACK_WEBHOOK_DEV_NOTIFICATIONS: ${{ secrets.SLACK_WEBHOOK_DEV_NOTIFICATIONS }}
