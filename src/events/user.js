@@ -17,7 +17,7 @@ function userEvents(postmark) {
   Sentry.addBreadcrumb({
     category: 'events',
     message: 'entered user event emitter in partners api',
-    level: Sentry.Severity.Info,
+    level: 'info',
   });
 
   async function getEmailData({ firestore, lead }) {
@@ -58,7 +58,7 @@ function userEvents(postmark) {
     if (!partner || !memberLead || (partnerContact && !partnerContact.email)) {
       dlog('Failed to retreave partner or member data');
       Sentry.withScope(scope => {
-        scope.setLevel(Sentry.Severity.Error);
+        scope.setLevel('error');
         scope.setContext('partner', partner);
         scope.setContext('memberLead', memberLead);
         scope.setContext('partnerContact', partnerContact);
@@ -99,7 +99,7 @@ function userEvents(postmark) {
 
     if (!partnerContact?.email) {
       Sentry.withScope(scope => {
-        scope.setLevel(Sentry.Severity.Error);
+        scope.setLevel('error');
         scope.setContext('partner', partner);
         scope.setContext('memberLead', memberLead);
         scope.setContext('partnerContact', partnerContact);
@@ -142,7 +142,7 @@ function userEvents(postmark) {
     const templateAlias = 'lead-partner-generated';
     if (!lead.partnerContactId) {
       Sentry.withScope(scope => {
-        scope.setLevel(Sentry.Severity.Warning);
+        scope.setLevel('warning');
         scope.setTag('event', 'user');
         scope.setContext('lead', lead);
         Sentry.captureMessage(

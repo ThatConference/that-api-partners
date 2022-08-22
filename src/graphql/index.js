@@ -1,5 +1,5 @@
-import { ApolloServer, SchemaDirectiveVisitor } from 'apollo-server-express';
-import { buildFederatedSchema } from '@apollo/federation';
+import { ApolloServer } from 'apollo-server-express';
+import { buildSubgraphSchema } from '@apollo/subgraph';
 import debug from 'debug';
 import * as Sentry from '@sentry/node';
 import { security } from '@thatconference/api';
@@ -25,16 +25,21 @@ const jwtClient = security.jwt();
  *     createGateway(userContext)
  */
 const createServer = ({ dataSources }) => {
-  const schema = buildFederatedSchema([{ typeDefs, resolvers }]);
-  SchemaDirectiveVisitor.visitSchemaDirectives(schema, directives);
+  let schema = buildSubgraphSchema([{ typeDefs, resolvers }]);
+  const directiveTransformers = [
+    directives.auth('auth').authDirectiveTransformer,
+  ];
+  dlog('directiveTransformers: %O', directiveTransformers);
+  schema = directiveTransformers.reduce(
+    (curSchema, transformer) => transformer(curSchema),
+    schema,
+  );
 
   return new ApolloServer({
     schema,
     introspection: JSON.parse(process.env.ENABLE_GRAPH_INTROSPECTION || false),
-    playground: JSON.parse(process.env.ENABLE_GRAPH_PLAYGROUND)
-      ? { endpoint: '/' }
-      : false,
-
+    csrfPrevention: true,
+    cache: 'bounded',
     dataSources: () => {
       dlog('creating dataSources');
       const { firestore } = dataSources;
@@ -64,7 +69,6 @@ const createServer = ({ dataSources }) => {
         partnerLoader,
       };
     },
-
     context: async ({ req, res }) => {
       dlog('building graphql user context');
       let context = {};
@@ -74,7 +78,7 @@ const createServer = ({ dataSources }) => {
         Sentry.addBreadcrumb({
           category: 'graphql context',
           message: 'user has authToken',
-          level: Sentry.Severity.Info,
+          level: 'info',
         });
 
         const validatedToken = await jwtClient.verify(
@@ -102,9 +106,7 @@ const createServer = ({ dataSources }) => {
 
       return context;
     },
-
     plugins: [],
-
     formatError: err => {
       dlog('formatError %O', err);
 
