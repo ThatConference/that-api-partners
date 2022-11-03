@@ -69,7 +69,7 @@ const partner = dbInstance => {
       Sentry.withScope(scope => {
         scope.setLevel('error');
         scope.setContext(
-          'failed batch write member profile and slug',
+          'failed batch write new partner record',
           { partnerDocRef, scrubbedPartner },
           { slugDocRef, slugDoc },
           { user: user.sub },
@@ -230,12 +230,15 @@ const partner = dbInstance => {
       dlog('failed batch write change partner slug');
       Sentry.withScope(scope => {
         scope.setLevel('error');
-        scope.setContext(
-          'failed batch write change partner slug',
-          { partnerDocRef, scrubbedPartner },
-          { newSlugDocRef, newSlugDoc },
-          { user: user.sub },
-        );
+        scope.setTags({
+          memberId: user.sub,
+          partnerId: partnerDocRef.id,
+          partnerSlug: newSlug,
+        });
+        scope.setContext('failed batch write change partner slug', {
+          scrubPartner,
+          newSlugDoc,
+        });
         Sentry.captureException(err);
       });
       throw new Error('failed batch write change partner slug');

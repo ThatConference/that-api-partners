@@ -12,4 +12,4 @@ COPY __build__ ./
 RUN npm set-script prepare '' \
   && ls -lasi && npm install --omit=dev
 
-CMD [ "npm", "start" ]
+CMD [ "node", "index.js" ]
