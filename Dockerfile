@@ -1,6 +1,6 @@
 # THAT gateway Dockerfile
 
-FROM node:16-alpine
+FROM node:18-alpine
 
 # Create and change to app directory
 WORKDIR /usr/src/that
@@ -9,7 +9,7 @@ WORKDIR /usr/src/that
 COPY __build__ ./
 
 # install production node_modules
-RUN npm set-script prepare '' \
+RUN npm pkg delete scripts.prepare \
   && ls -lasi && npm install --omit=dev
 
 CMD [ "node", "index.js" ]
