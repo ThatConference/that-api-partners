@@ -121,6 +121,8 @@ function createUserContext(req, res, next) {
     correlationId,
     site,
   };
+  dlog('headers %o', req.headers);
+  dlog('userContext %o', req.userContext);
 
   next();
 }
@@ -164,16 +166,3 @@ api.use(Sentry.Handlers.errorHandler()).use(failure);
 api.listen({ port }, () =>
   console.log(`✨ Partners 🤝 is running on port 🚢 ${port}`),
 );
-
-// graphServer
-//   .start()
-//   .then(() => {
-//     graphServer.applyMiddleware({ app: api, path: '/' });
-//     api.listen({ port }, () =>
-//       console.log(`✨ Partners 🤝 is running 🏃‍♂️ on port 🚢 ${port}`),
-//     );
-//   })
-//   .catch(err => {
-//     console.log(`graphServer.start() error 💥: ${err.message}`);
-//     throw err;
-//   });
