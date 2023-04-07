@@ -81,11 +81,9 @@ const createServerParts = ({ dataSources, httpServer }) => {
       Sentry.withScope(scope => {
         scope.setTag('formatError', true);
         scope.setLevel('warning');
-
-        scope.setContext('setExtra', {
-          originalError: err.originalError,
-          path: err.path,
-        });
+        scope.setContext('originalError', { originalError: err.originalError });
+        scope.setContext('path', { path: err.path });
+        scope.setContext('error object', { error: err });
         Sentry.captureException(err);
       });
 
