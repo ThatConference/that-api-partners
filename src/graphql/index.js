@@ -43,31 +43,6 @@ const createServerParts = ({ dataSources, httpServer }) => {
     schema,
   );
 
-  dlog('🚜 assembling datasources');
-  const { firestore } = dataSources;
-  const amendedDataSources = {
-    ...dataSources,
-    partnerLoader: new DataLoader(ids =>
-      partnerStore(firestore)
-        .getBatch(ids)
-        .then(partners => {
-          if (partners.includes(null)) {
-            Sentry.withScope(scope => {
-              scope.setLevel('error');
-              scope.setContext(
-                `partner loader partner(s) don't exist in partners collection`,
-                { ids, partners },
-              );
-              Sentry.captureMessage(
-                `partner loader partner(s) don't exist in partners collection`,
-              );
-            });
-          }
-          return ids.map(i => partners.find(p => p && p.id === i));
-        }),
-    ),
-  };
-
   dlog('🚜 creating new apollo server instance');
   const graphQlServer = new ApolloServer({
     schema,
@@ -94,9 +69,30 @@ const createServerParts = ({ dataSources, httpServer }) => {
   dlog('🚜 creating createContext function');
   const createContext = async ({ req, res }) => {
     dlog('🚜 building graphql user context');
+    dlog('🚜 assembling datasources');
+    const { firestore } = dataSources;
     let context = {
       dataSources: {
-        ...amendedDataSources,
+        ...dataSources,
+        partnerLoader: new DataLoader(ids =>
+          partnerStore(firestore)
+            .getBatch(ids)
+            .then(partners => {
+              if (partners.includes(null)) {
+                Sentry.withScope(scope => {
+                  scope.setLevel('error');
+                  scope.setContext(
+                    `partner loader partner(s) don't exist in partners collection`,
+                    { ids, partners },
+                  );
+                  Sentry.captureMessage(
+                    `partner loader partner(s) don't exist in partners collection`,
+                  );
+                });
+              }
+              return ids.map(i => partners.find(p => p && p.id === i));
+            }),
+        ),
       },
     };
 
