@@ -1,6 +1,10 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
 import express from 'express';
+import http from 'node:http';
+import { json } from 'body-parser';
+import cors from 'cors';
+import { expressMiddleware } from '@apollo/server/express4';
 import debug from 'debug';
 import { Firestore } from '@google-cloud/firestore';
 import { Client as Postmark } from 'postmark';
@@ -23,12 +27,13 @@ let version;
   version = p.version;
 })();
 
-const firestore = new Firestore();
 const dlog = debug('that:api:partners:index');
-const api = express();
+const firestore = new Firestore();
 const defaultVersion = `that-api-partners@${version}`;
 const postmark = new Postmark(envConfig.postmarkApiToken);
 const userEvents = userEventEmitter(postmark);
+const api = express();
+const port = process.env.PORT || 8002;
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
@@ -42,6 +47,8 @@ Sentry.configureScope(scope => {
   scope.setTag('thatApp', 'that-api-partners');
 });
 
+const httpServer = http.createServer(api);
+
 const createConfig = () => ({
   dataSources: {
     sentry: Sentry,
@@ -51,11 +58,12 @@ const createConfig = () => ({
       userEvents,
     },
   },
+  httpServer,
 });
 
-const graphServer = apolloGraphServer(createConfig());
+const graphServerParts = apolloGraphServer(createConfig());
 
-const useSentry = async (req, res, next) => {
+const sentryMark = async (req, res, next) => {
   Sentry.addBreadcrumb({
     category: 'that-api-partners',
     message: 'partner init',
@@ -103,12 +111,18 @@ function createUserContext(req, res, next) {
     site = 'www.thatconference.com';
   }
 
+  Sentry.configureScope(scope => {
+    scope.setTag('site', site);
+  });
+
   req.userContext = {
     locale: req.headers.locale,
     authToken: req.headers.authorization,
     correlationId,
     site,
   };
+  dlog('headers %o', req.headers);
+  dlog('userContext %o', req.userContext);
 
   next();
 }
@@ -120,18 +134,35 @@ function failure(err, req, res, next) {
   res.set('Content-Type', 'application/json').status(500).json(err.message);
 }
 
-api.use(responseTime()).use(useSentry).use(createUserContext).use(failure);
+// api.use(responseTime()).use(useSentry).use(createUserContext).use(failure);
 
-const port = process.env.PORT || 8002;
-graphServer
+api.use(
+  Sentry.Handlers.requestHandler(),
+  cors(),
+  responseTime(),
+  json(),
+  sentryMark,
+  createUserContext,
+);
+
+const { graphQlServer, createContext } = graphServerParts;
+
+graphQlServer
   .start()
   .then(() => {
-    graphServer.applyMiddleware({ app: api, path: '/' });
-    api.listen({ port }, () =>
-      console.log(`✨ Partners 🤝 is running 🏃‍♂️ on port 🚢 ${port}`),
+    api.use(
+      expressMiddleware(graphQlServer, {
+        context: async ({ req }) => createContext({ req }),
+      }),
     );
   })
   .catch(err => {
     console.log(`graphServer.start() error 💥: ${err.message}`);
     throw err;
   });
+
+api.use(Sentry.Handlers.errorHandler()).use(failure);
+
+api.listen({ port }, () =>
+  console.log(`✨ Partners 🤝 is running on port 🚢 ${port}`),
+);
