@@ -32,28 +32,29 @@ type Partner @key(fields: "id") {
   twitter: URL
   facebook: URL
   twitch: URL
-
-  jobListing(slug: String!): JobListing
-  jobListings(isFeatured: Boolean): [JobListing]
-
   chat: URL
   blog: URL
   vlog: URL
 
+  "A single job listing referenced by slug"
+  jobListing(slug: String!): JobListing
+  """
+  Partners available jobs
+  isfeatured: Boolean: list featured jobs only.
+  """
+  jobListings(isFeatured: Boolean): [JobListing]
   "The list of sessions for this partner"
   sessions: [AcceptedSession]
   "The list of members associated with this partner"
   members: [PublicProfile]
-
+  "Does this partner have an active sponsorship"
+  isActiveSponsor: Boolean
   "Total follower count includes private and public profile follows"
   followCount: Int
-
   "Members with public profile following/favoriting community. Defaults: pageSize: 20"
   followers(pageSize: Int, cursor: String): PagedMember
-
   "Assets assigned to this partner"
   assets: [Asset]
-
   "date and time partner record created. initial records may be missing this date"
   createdAt: Date
   "date and time this record was last updated"

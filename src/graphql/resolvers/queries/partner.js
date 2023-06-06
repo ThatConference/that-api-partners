@@ -4,6 +4,7 @@ import { dataSources } from '@thatconference/api';
 import jobListingStore from '../../../dataSources/cloudFirestore/jobListing';
 import membersStore from '../../../dataSources/cloudFirestore/members';
 import sessionsStore from '../../../dataSources/cloudFirestore/sessions';
+import eventPartnerStore from '../../../dataSources/cloudFirestore/eventPartners';
 
 const dlog = debug('that:api:partners:query:partner');
 const favoriteStore = dataSources.cloudFirestore.favorites;
@@ -17,7 +18,6 @@ export const refResolvers = {
       dlog('resolve reference');
       return partnerLoader.load(id);
     },
-
     members: ({ id }, _, { dataSources: { firestore } }) => {
       dlog('members');
 
@@ -32,7 +32,10 @@ export const refResolvers = {
             })),
         );
     },
-
+    isActiveSponsor: ({ id }, __, { dataSources: { firestore } }) => {
+      dlog('isActiveSponsor?');
+      return eventPartnerStore(firestore).isPartnerActiveSponsor(id);
+    },
     sessions: ({ id }, _, { dataSources: { firestore } }) => {
       dlog('sessions');
 
@@ -45,12 +48,10 @@ export const refResolvers = {
           })),
         );
     },
-
     jobListing: ({ id }, { slug }, { dataSources: { firestore } }) => {
       dlog('jobListings');
       return jobListingStore(firestore).findBySlug(id, slug);
     },
-
     jobListings: (
       { id },
       { isFeatured = false },
@@ -59,7 +60,6 @@ export const refResolvers = {
       dlog('jobListings');
       return jobListingStore(firestore).findPartners(id, isFeatured);
     },
-
     followCount: ({ id }, __, { dataSources: { firestore } }) => {
       dlog('followCount called');
       return favoriteStore(firestore).getFavoriteCount({
@@ -67,7 +67,6 @@ export const refResolvers = {
         favoriteType,
       });
     },
-
     followers: (
       { id },
       { pageSize, cursor },
@@ -81,14 +80,12 @@ export const refResolvers = {
         cursor,
       });
     },
-
     lastUpdatedBy: ({ lastUpdatedBy }) => {
       let result = null;
       if (lastUpdatedBy) result = { id: lastUpdatedBy };
 
       return result;
     },
-
     assets: ({ id: entityId }, __, { dataSources: { firestore } }) => {
       dlog('partner assets request');
       return assetStore(firestore).findEntityAssets({
@@ -96,7 +93,6 @@ export const refResolvers = {
         entityType,
       });
     },
-
     admin: ({ id: partnerId }) => ({ partnerId }),
   },
 };
