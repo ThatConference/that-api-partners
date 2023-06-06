@@ -71,7 +71,18 @@ function eventParnters(dbInstance) {
     return inOrder.map(p => p.id);
   }
 
-  return { findActivePartners };
+  function isPartnerActiveSponsor(partnerId) {
+    dlog('is %s and active sponsor?', partnerId);
+    return dbInstance
+      .collectionGroup('partners')
+      .where('partnerId', '==', partnerId)
+      .where('expirationDate', '>', new Date())
+      .select()
+      .get()
+      .then(querySnap => querySnap.size > 0);
+  }
+
+  return { findActivePartners, isPartnerActiveSponsor };
 }
 
 export default eventParnters;
