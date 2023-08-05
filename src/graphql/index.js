@@ -59,7 +59,11 @@ const createServerParts = ({ dataSources, httpServer }) => {
         scope.setContext('originalError', { originalError: err.originalError });
         scope.setContext('path', { path: err.path });
         scope.setContext('error object', { error: err });
-        Sentry.captureException(err);
+        if (err instanceof Error) {
+          Sentry.captureException(err);
+        } else {
+          Sentry.captureException(new Error(err.message));
+        }
       });
 
       return err;

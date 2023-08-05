@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-unresolved */
-import express from 'express';
 import http from 'node:http';
+import express from 'express';
 import { json } from 'body-parser';
 import cors from 'cors';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -16,16 +16,7 @@ import apolloGraphServer from './graphql';
 import envConfig from './envConfig';
 import userEventEmitter from './events/user';
 
-let version;
-(async () => {
-  let p;
-  try {
-    p = await import('./package.json');
-  } catch {
-    p = await import('../package.json');
-  }
-  version = p.version;
-})();
+import { version } from './package.json';
 
 const dlog = debug('that:api:partners:index');
 const firestore = new Firestore();
@@ -127,14 +118,17 @@ function createUserContext(req, res, next) {
   next();
 }
 
+function getVersion(req, res) {
+  dlog('method %s, defaultVersion %s', req.method, defaultVersion);
+  return res.json({ version: defaultVersion });
+}
+
 function failure(err, req, res, next) {
   dlog('error %o', err);
   Sentry.captureException(err);
 
   res.set('Content-Type', 'application/json').status(500).json(err.message);
 }
-
-// api.use(responseTime()).use(useSentry).use(createUserContext).use(failure);
 
 api.use(
   Sentry.Handlers.requestHandler(),
@@ -144,6 +138,7 @@ api.use(
   sentryMark,
   createUserContext,
 );
+api.use('/version', getVersion);
 
 const { graphQlServer, createContext } = graphServerParts;
 
