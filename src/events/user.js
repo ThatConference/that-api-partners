@@ -42,10 +42,16 @@ function userEvents(postmark) {
     // THAT Profile functions
     const tpFuncs = [];
     if (!memberLead || (!partnerContact && partnerContact !== false)) {
-      if (memberLead) tpFuncs.push(memberLead);
-      else tpFuncs.push(memberStore(firestore).get(lead.memberId));
-      if (partnerContact) tpFuncs.push(partnerContact);
-      else tpFuncs.push(memberStore(firestore).get(lead.partnerContactId));
+      if (memberLead) {
+        tpFuncs.push(memberLead);
+      } else {
+        tpFuncs.push(memberStore(firestore).get(lead.memberId));
+      }
+      if (partnerContact) {
+        tpFuncs.push(partnerContact);
+      } else {
+        tpFuncs.push(memberStore(firestore).get(lead.partnerContactId));
+      }
       try {
         [memberLead, partnerContact] = await Promise.all(tpFuncs);
       } catch (err) {
@@ -97,30 +103,15 @@ function userEvents(postmark) {
     });
     if (!partner || !memberLead) return undefined;
 
-    if (!partnerContact?.email) {
-      Sentry.withScope(scope => {
-        scope.setLevel('error');
-        scope.setContext('partner', partner);
-        scope.setContext('memberLead', memberLead);
-        scope.setContext('partnerContact', partnerContact);
-        scope.setContext('lead', lead);
-        scope.setTag('message', 'member-generated-lead');
-        Sentry.captureMessage(
-          'No partner contact email returned. cannot send email.',
-        );
-      });
-      dlog('No partner contact email returned. cannot send email.');
-      return undefined;
-    }
-    dlog(`let's send this email`);
-    return postmark.sendEmailWithTemplate({
+    dlog(`✉️ let's send this email`);
+    const postmarkPayload = {
       templateAlias,
       from: envConfig.notificationEmailFrom,
-      to: partnerContact.email,
-      cc: memberLead.email,
+      to: memberLead.email,
       templateModel: {
         event: {
           name: event.name,
+          slug: event.slug,
         },
         partner: {
           companyName: partner.companyName,
@@ -134,7 +125,12 @@ function userEvents(postmark) {
         },
       },
       tag: 'member_gen_lead',
-    });
+    };
+    if (partnerContact.email) {
+      postmarkPayload.to += `, ${partnerContact.email}`;
+    }
+
+    return postmark.sendEmailWithTemplate(postmarkPayload);
   }
 
   async function sendPartnerGenLeadEmail({ firestore, event, lead }) {
