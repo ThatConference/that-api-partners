@@ -17,7 +17,7 @@
     "test:watch": "jest --watchAll",
     "lint": "eslint 'src/**/*.js'",
     "validate": "concurrently npm:test npm:lint npm:build",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "dependencies": {
     "@apollo/server": "^4.11.0",
